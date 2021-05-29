@@ -1,10 +1,13 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using api.Helpers;
+using api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -14,22 +17,52 @@ namespace Trips
     {
         [FunctionName("trips")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get",  Route = null)] HttpRequest req,
+            ExecutionContext context,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            var storageHelper = GetStorageHelper(context);
+            var entities = await storageHelper.GetTrips();
+            return new OkObjectResult(entities);
+        }
 
-            string name = req.Query["name"];
+        [FunctionName("trip")]
+        public static async Task<IActionResult> CreateTrip(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            ExecutionContext context,
+            ILogger log)
+        {
+            var trip = await DeserializeTrip(req.Body);
+            var storageHelper = GetStorageHelper(context);
+            var insertedTrip = await storageHelper.CreateTrip(trip);
+            return new OkObjectResult(insertedTrip);
+        }
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+        private static async Task<Trip> DeserializeTrip(Stream reqBody)
+        {
+            string requestBody;
+            using (var streamReader = new StreamReader(reqBody))
+            {
+                requestBody = await streamReader.ReadToEndAsync();
+            }
+            var trip = JsonConvert.DeserializeObject<Trip>(requestBody);
+            return trip;
+        }
 
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
+        private static IStorageHelper GetStorageHelper(ExecutionContext context)
+        {
+            var config = SetupConfig(context);
+            var connectionString = config["StorageAccountConnectionString"];
+            return new StorageHelper(connectionString);
+        }
 
-            return new OkObjectResult(responseMessage);
+        private static IConfiguration SetupConfig(ExecutionContext context)
+        {
+            return new ConfigurationBuilder()
+                .SetBasePath(context.FunctionAppDirectory)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
         }
     }
 }
