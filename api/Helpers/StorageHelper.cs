@@ -1,21 +1,27 @@
-﻿using System;
+﻿
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using api.Models;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Azure.Cosmos.Table.Queryable;
+using Microsoft.Azure.Documents.SystemFunctions;
 
 namespace api.Helpers
 {
     public interface IStorageHelper
     {
-        public Task<List<TestEntity>> GetEntities();
+        public Task<Trip> CreateTrip(Trip trip);
+        public Task<List<Trip>> GetTrips();
     }
 
     public class StorageHelper: IStorageHelper
     {
         private static CloudTableClient _tableClient;
-        private static readonly string _tableName = "test";
+        private const string _tableName = "trip";
 
         public StorageHelper(string storageConnectionString)
         {
@@ -23,12 +29,29 @@ namespace api.Helpers
             _tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
         }
 
-        public async Task<List<TestEntity>> GetEntities()
+        public async Task<Trip> CreateTrip(Trip trip)
         {
-            var entities = await GetEntities<TestEntity>("", _tableName);
-            //var persons = personEntities.Select(p => p.ToPerson()).ToList();
+            var insertedTrip = (await MergeEntity(new TripEntity(trip), _tableName)).ToTrip();
+            return insertedTrip;
+        }
 
-            return entities;
+        public async Task<List<Trip>> GetTrips()
+        {
+            var tripEntities = await GetEntities<TripEntity>("", _tableName);
+            var trips = tripEntities.Select(p => p.ToTrip()).ToList();
+
+            return trips;
+        }
+
+        private static async Task<T> MergeEntity<T>(T entity, string tableName) where T : TableEntity, new()
+        {
+            var table = _tableClient.GetTableReference(tableName);
+            var insertOrMergeOperation = TableOperation.InsertOrMerge(entity);
+
+            var result = await table.ExecuteAsync(insertOrMergeOperation);
+            var insertedEntity = result.Result as T;
+
+            return insertedEntity;
         }
 
         private static async Task<List<T>> GetEntities<T>(string partitionKey, string tableName) where T : TableEntity, new()

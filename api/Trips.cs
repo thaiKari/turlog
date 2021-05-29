@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using api.Helpers;
+using api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -20,12 +21,32 @@ namespace Trips
             ExecutionContext context,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
             var storageHelper = GetStorageHelper(context);
-
-            var entities = await storageHelper.GetEntities();
+            var entities = await storageHelper.GetTrips();
             return new OkObjectResult(entities);
+        }
+
+        [FunctionName("trip")]
+        public static async Task<IActionResult> CreateTrip(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            ExecutionContext context,
+            ILogger log)
+        {
+            var trip = await DeserializeTrip(req.Body);
+            var storageHelper = GetStorageHelper(context);
+            var insertedTrip = await storageHelper.CreateTrip(trip);
+            return new OkObjectResult(insertedTrip);
+        }
+
+        private static async Task<Trip> DeserializeTrip(Stream reqBody)
+        {
+            string requestBody;
+            using (var streamReader = new StreamReader(reqBody))
+            {
+                requestBody = await streamReader.ReadToEndAsync();
+            }
+            var trip = JsonConvert.DeserializeObject<Trip>(requestBody);
+            return trip;
         }
 
         private static IStorageHelper GetStorageHelper(ExecutionContext context)
