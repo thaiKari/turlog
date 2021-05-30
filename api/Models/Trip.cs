@@ -6,7 +6,7 @@ namespace api.Models
     public class Trip
     {
         public string Id { get; set; }
-        public DateTimeOffset Date { get; set; } = new DateTimeOffset(DateTime.Now);
+        public DateTime Date { get; set; } = DateTime.Now;
         public string Name { get; set; }
         public string Description { get; set; }
         public string Parking { get; set; }
