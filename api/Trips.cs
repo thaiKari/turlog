@@ -38,6 +38,21 @@ namespace Trips
             return new OkObjectResult(insertedTrip);
         }
 
+        [FunctionName("settings")]
+        public static async Task<IActionResult> GetImageUrl(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "settings")] HttpRequest req,
+            ExecutionContext context,
+            ILogger log)
+        {
+            var config = SetupConfig(context);
+            var settings = new Settings()
+            {
+                Imagesurl = config["ImagesUrl"]
+            };
+
+            return new OkObjectResult(settings);
+        }
+
         private static async Task<Trip> DeserializeTrip(Stream reqBody)
         {
             string requestBody;
