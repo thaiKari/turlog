@@ -1,8 +1,8 @@
 import React from "react";
-import { Trip } from "../data/types";
+import { Trip } from "../../data/types";
 import {Button, Card, CardActionArea, CardActions, CardContent, CardMedia, makeStyles, Typography} from '@material-ui/core';
 import { useRecoilValue } from "recoil";
-import { imagesBaseUrlState } from "../data/state";
+import { imagesBaseUrlState } from "../../data/state";
 
 const useStyles = makeStyles((theme) =>({
   root: {

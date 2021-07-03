@@ -1,16 +1,27 @@
 import { Container } from "@material-ui/core";
 import React, { Suspense } from "react";
 import { RecoilRoot } from "recoil";
-import { TripList } from "./components/TripList";
+import { TripList } from "./components/Trip/TripList";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from "react-router-dom";
+import { NewTrip } from "./components/Trip/NewTrip";
 
 export const App = () => {
   return (
     <RecoilRoot>
+      <Router>
       <Container>
         <Suspense fallback={<div>Loading ...</div>}>
-          <TripList />
+        <Switch>
+          <Route path="/trip/new" component={NewTrip} />
+          <Route path="/" component={TripList} />
+          </Switch>
         </Suspense>
       </Container>
+      </Router>
     </RecoilRoot>
   );
 };
