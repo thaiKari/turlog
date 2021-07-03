@@ -11,6 +11,21 @@ export async function getImageBaseUrl(): Promise<string> {
   return settings["imagesurl"];
 }
 
+export async function createNewTrip(trip: Trip): Promise<string> {
+  const rawResponse = await fetch(`/api/trip`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(trip),
+  });
+  const content = await rawResponse.json();
+
+  console.log(content);
+  return content
+}
+
 function sanitize(trips: Trip[]) {
   trips.forEach((t) => {
     t.date = new Date(t.date.toString());

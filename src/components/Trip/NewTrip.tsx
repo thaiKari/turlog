@@ -2,11 +2,12 @@ import React, { useEffect } from 'react'
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { editingTripState, getNewTrip } from '../../data/state';
-import { Trip } from '../../data/types';
+import { editingTripState, getNewTrip, updateTripsState } from '../../data/state';
 import { createCopy } from '../../data/util';
-import { FormControl, TextField, Grid, makeStyles } from '@material-ui/core';
+import { FormControl, TextField, Grid, makeStyles, Button } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+import { createNewTrip } from '../../data/data';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -16,11 +17,17 @@ const useStyles = makeStyles((theme) => ({
         },
         maxWidth: 800,
     },
-    title:{
+    title: {
         marginBottom: theme.spacing(4)
     },
     formItem: {
         width: '100%'
+    },
+    form: {
+        marginBottom: theme.spacing(4)
+    },
+    button: {
+        marginRight: theme.spacing(2)
     }
 }));
 
@@ -31,23 +38,27 @@ interface Props {
 export const NewTrip = (props: Props) => {
     const classes = useStyles();
     const setEditingTrip = useSetRecoilState(editingTripState)
+    const forceResetTrips = useSetRecoilState(updateTripsState);
+    const resetTrips = () => forceResetTrips((n) => n + 1);
     const trip = useRecoilValue(editingTripState)
+    const history = useHistory();
 
     useEffect(() => {
         setEditingTrip(getNewTrip());
     }, [setEditingTrip])
 
-    const onSubmit = async (trip: Trip) => {
-        // const submitted = await createNewTrip(Trip);
-        // setEditingTrip(getNewTrip());        
-
-        // return submitted;
+    const onSubmit = async () => {
+        await createNewTrip(trip);
+        resetTrips()
+        setEditingTrip(getNewTrip()); 
+        history.push('/')       
 
         console.log('submit ', trip)
     }
 
-    const onCancel = async (trip: Trip) => {
+    const onCancel = () => {        
         setEditingTrip(getNewTrip());
+        history.push('/')
     }
 
 
@@ -57,7 +68,7 @@ export const NewTrip = (props: Props) => {
         setEditingTrip(tripCopy);
     };
 
-    const onTextFieldChangeHandler = (fieldId: 'name' | 'description') => (e: any) => {
+    const onTextFieldChangeHandler = (fieldId: 'name' | 'description' | 'parking') => (e: any) => {
 
         let tripCopy = createCopy(trip);
         tripCopy[fieldId] = e.target.value
@@ -67,54 +78,73 @@ export const NewTrip = (props: Props) => {
 
     return (
         <div className={classes.root} >
-        <Typography variant='h4' align='center' className={classes.title}>New Trip</Typography>
-        <Grid container spacing={2}>
-            <Grid item xs={12} sm={12}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                        className={classes.formItem}
-                        disableToolbar
-                        variant="inline"
-                        format="MM/dd/yyyy"
-                        label="Date"
-                        value={trip.date}
-                        onChange={handleDateChange}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                        }}
-                        inputVariant="outlined"
-                    />
-                </MuiPickersUtilsProvider>
+            <Typography variant='h4' align='center' className={classes.title}>New Trip</Typography>
+            <Grid container spacing={2} className={classes.form}>
+                <Grid item xs={12} sm={12}>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                            className={classes.formItem}
+                            disableToolbar
+                            variant="inline"
+                            format="MM/dd/yyyy"
+                            label="Date"
+                            value={trip.date}
+                            onChange={handleDateChange}
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
+                            }}
+                            inputVariant="outlined"
+                        />
+                    </MuiPickersUtilsProvider>
 
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
+                    <FormControl style={{ width: '100%' }}>
+                        <TextField
+                            className={classes.formItem}
+                            value={trip.name}
+                            onChange={onTextFieldChangeHandler('name')}
+                            label="Trip Name"
+                            variant="outlined"
+                        />
+                    </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
+                    <FormControl style={{ width: '100%' }}>
+                        <TextField
+                            className={classes.formItem}
+                            value={trip.description}
+                            onChange={onTextFieldChangeHandler('description')}
+                            label="Description"
+                            multiline
+                            rowsMax={10}
+                            variant="outlined"
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                    <FormControl style={{ width: '100%' }}>
+                        <TextField
+                            className={classes.formItem}
+                            value={trip.parking}
+                            onChange={onTextFieldChangeHandler('parking')}
+                            label="Parking"
+                            multiline
+                            rowsMax={10}
+                            variant="outlined"
+                        />
+                    </FormControl>
+                </Grid>
             </Grid>
-
-            <Grid item xs={12} sm={12}>
-                <FormControl style={{width:'100%'}}>
-                    <TextField
-                        className={classes.formItem}
-                        value={trip.name}
-                        onChange={onTextFieldChangeHandler('name')}
-                        label="Trip Name"
-                        variant="outlined"
-                    />
-                </FormControl>
-            </Grid>
-
-            <Grid item xs={12} sm={12}>
-                <FormControl style={{width:'100%'}}>
-                    <TextField
-                        className={classes.formItem}
-                        value={trip.description}
-                        onChange={onTextFieldChangeHandler('description')}
-                        label="Description"
-                        multiline
-                        rowsMax={10}
-                        variant="outlined"
-                    />
-                </FormControl>
-            </Grid>
-
-        </Grid>
+            
+            <Button className={classes.button} variant='contained' color='primary' onClick={async () => await onSubmit()}>
+                Save
+            </Button>
+            <Button  className={classes.button}  variant='outlined' color='primary' onClick={onCancel}>
+                Cancel
+            </Button>
         </div>
     )
 }

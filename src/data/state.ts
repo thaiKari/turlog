@@ -3,17 +3,24 @@ import { getTrips, getImageBaseUrl } from "./data";
 import { Trip } from "./types";
 import { v4 as uuidv4 } from 'uuid';
 
+export const updateTripsState = atom({
+    key: "updateTripsState",
+    default: 0,
+  });
+
 export const tripsState = selector<Trip[]>({
     key: 'tripsState',
-    get:  async () => await getTrips()
-
+    get:  async ({ get }) => {
+        get(updateTripsState);
+        return await getTrips();
+      }
 });
 
 export const imagesBaseUrlState = atom({
     key: 'imagesBaseUrlState',
     default: selector({
         key: 'imagesBaseUrlStatet',
-        get: async () => await getImageBaseUrl(),
+        get: async () => await getImageBaseUrl(),        
     }), 
   });
 
