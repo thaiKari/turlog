@@ -12,6 +12,9 @@ const useStyles = makeStyles((theme) =>({
   media: {
     height: 140,
   },
+  pos: {
+    marginBottom: 12,
+  },
 }));
 
 interface Props {
@@ -21,7 +24,7 @@ interface Props {
 export const TripCard: React.FC<Props> = ({ trip }) => {
   const classes = useStyles();
   const imagesUrl = useRecoilValue(imagesBaseUrlState);
-
+  
   const getImageUrl = (images: string[] | undefined) : string => {
     let imageName = 'placeholder.png'    
     if(images && images[0]){
@@ -41,10 +44,14 @@ export const TripCard: React.FC<Props> = ({ trip }) => {
           title="Contemplative Reptile"
         />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
+        
+          <Typography variant="h5" component="h2">
             {trip.name}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
+          </Typography> 
+          <Typography gutterBottom className={classes.pos} color="textSecondary" >
+            {trip.date.toLocaleDateString()}
+          </Typography>         
+          <Typography variant="body2" component="p">
             {trip.description ? trip.description: ''}
           </Typography>
         </CardContent>
