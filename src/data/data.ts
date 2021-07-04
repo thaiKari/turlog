@@ -30,20 +30,18 @@ async function saveTrip(trip: Trip): Promise<any> {
 }
 
 async function uploadImages(trip: TripWithImageFiles): Promise<any> {
-  let uploadPromises: Promise<any>[] = [];
   
   trip.imageFiles &&
-    trip.imageFiles.forEach((file) => {
+    trip.imageFiles.forEach(async (file) => {
       const body = new FormData();
       body.append('data', file);      
-      uploadPromises.push(fetch("/api/images/upload",
+      await fetch("/api/images/upload",
       {
           body: body,
           method: "post"
-      }));
+      });
     });
 
-  return await Promise.allSettled(uploadPromises);
 }
 
 async function post(
