@@ -1,3 +1,4 @@
+import { FileWithPath } from "react-dropzone";
 
 export interface Trip {
     id:           string;
@@ -10,4 +11,10 @@ export interface Trip {
     images?:       string[];
 }
 
+export interface ImageFile extends FileWithPath {
+    preview: string
+}
 
+export interface TripWithImageFiles extends Trip {
+    imageFiles?: ImageFile[]
+}

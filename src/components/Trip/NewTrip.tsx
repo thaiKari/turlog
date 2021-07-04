@@ -8,6 +8,7 @@ import { FormControl, TextField, Grid, makeStyles, Button } from '@material-ui/c
 import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { createNewTrip } from '../../data/data';
+import { ImageUploader } from '../Form/ImageUploader';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -32,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-
 }
 
 export const NewTrip = (props: Props) => {
@@ -135,6 +135,12 @@ export const NewTrip = (props: Props) => {
                             rowsMax={10}
                             variant="outlined"
                         />
+                    </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
+                    <FormControl style={{ width: '100%' }}>
+                        <ImageUploader/>
                     </FormControl>
                 </Grid>
             </Grid>
