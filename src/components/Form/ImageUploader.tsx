@@ -1,4 +1,4 @@
-import { useTheme } from '@material-ui/core';
+import { IconButton, makeStyles, useTheme } from '@material-ui/core';
 import { Theme } from '@material-ui/core';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useDropzone, FileWithPath } from 'react-dropzone'
@@ -6,6 +6,7 @@ import { useRecoilState } from 'recoil';
 import { editingTripState } from '../../data/state';
 import { ImageFile, TripWithImageFiles } from '../../data/types';
 import { createCopy } from '../../data/util';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 interface Props {
 
@@ -38,39 +39,48 @@ const rejectStyle = {
     borderColor: 'red'
 };
 
-const thumbsContainer = {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 16
-  };
-  
-  const thumb = {
-    display: 'inline-flex',
-    borderRadius: 2,
-    border: '1px solid #eaeaea',
-    marginBottom: 8,
-    marginRight: 8,
-    width: 100,
-    height: 100,
-    padding: 4,
-    boxSizing: 'border-box'
-  };
-  
-  const thumbInner = {
-    display: 'flex',
-    minWidth: 0,
-    overflow: 'hidden'
-  };
-  
-  const img = {
-    display: 'block',
-    width: 'auto',
-    height: '100%'
-  };
+const useStyles = makeStyles((theme) => ({
+    thumbsContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 16
+    },
+    thumb:{
+        display: 'inline-flex',
+        borderRadius: 2,
+        border: '1px solid #eaeaea',
+        marginBottom: 8,
+        marginRight: 8,
+        width: 100,
+        height: 100,
+        padding: 4,
+        boxSizing: 'border-box'
+    },
+    thumbInner:  {
+        display: 'flex',
+        minWidth: 0,
+        overflow: 'hidden'
+    },
+    img: {
+        display: 'block',
+        width: 'auto',
+        height: '100%'
+    },
+    deleteParent: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end',
+        width: 100,
+        position: 'absolute',
+        marginTop: -10
+    }
+}));
+
 
 
 export const ImageUploader = (props: Props) => {
+    const classes = useStyles();
     const theme = useTheme()
     const { acceptedFiles, getRootProps, getInputProps,
         isDragActive,
@@ -94,7 +104,7 @@ export const ImageUploader = (props: Props) => {
         acceptedFiles.forEach((file: FileWithPath) => {
             if (imagesCopy.filter(f => f.path === file.path).length === 0) {
                 let myFile = file as ImageFile;
-                myFile.preview = URL.createObjectURL(file);                
+                myFile.preview = URL.createObjectURL(file);
                 imagesCopy.push(myFile);
             }
         });
@@ -104,24 +114,34 @@ export const ImageUploader = (props: Props) => {
     }, [acceptedFiles])
 
     useEffect(() => {
-        let tripCopy:TripWithImageFiles  = createCopy(editingTrip)
+        let tripCopy: TripWithImageFiles = createCopy(editingTrip)
         tripCopy.imageFiles = images;
         tripCopy.images = images.map(i => i.name)
         setEditingTrip(tripCopy)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [images])
 
+    const removeImage = (name: string): void => {
+        setimages(images.filter(i => i.name !== name))
+    }
 
-    const fileList = (files: ImageFile[]  ): ReactNode => {
+
+    const preview = (files: ImageFile[]): ReactNode => {
         return (files &&
             files.map(file => (
-                <div style={thumb as React.CSSProperties} key={file.name}>
-                    <div style={thumbInner}>
+                <div className={classes.thumb} key={file.name}>
+                    <div className={classes.thumbInner}>
                         <img
                             src={file.preview}
-                            style={img}
+                            className={classes.img}
                             alt={file.name}
                         />
+                        <div className={classes.deleteParent}>
+                        <IconButton onClick={()=> removeImage(file.name)} aria-label="delete">
+                            <CancelIcon/>
+                        </IconButton>
+                        </div>
+
                     </div>
                 </div>
             ))
@@ -135,9 +155,11 @@ export const ImageUploader = (props: Props) => {
                 <input {...getInputProps()} />
                 <p>Upload Images</p>
             </div>
-            <aside style={thumbsContainer as React.CSSProperties}>
-                {fileList(images)}
+            <aside className={classes.thumbsContainer}>
+                {preview(images)}
             </aside>
         </section>
     );
 }
+
+
