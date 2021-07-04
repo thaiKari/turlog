@@ -12,7 +12,7 @@ interface Props {
 
 }
 
-const baseStyle = {
+const baseStyle = { 
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
