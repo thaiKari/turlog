@@ -7,12 +7,13 @@ import { editingTripState } from '../../data/state';
 import { ImageFile, TripWithImageFiles } from '../../data/types';
 import { createCopy } from '../../data/util';
 import CancelIcon from '@material-ui/icons/Cancel';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
 
 }
 
-const baseStyle = { 
+const baseStyle = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap',
         marginTop: 16
     },
-    thumb:{
+    thumb: {
         display: 'inline-flex',
         borderRadius: 2,
         border: '1px solid #eaeaea',
@@ -57,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
         padding: 4,
         boxSizing: 'border-box'
     },
-    thumbInner:  {
+    thumbInner: {
         display: 'flex',
         minWidth: 0,
         overflow: 'hidden'
@@ -103,7 +104,12 @@ export const ImageUploader = (props: Props) => {
         let imagesCopy: ImageFile[] = createCopy(images)
         acceptedFiles.forEach((file: FileWithPath) => {
             if (imagesCopy.filter(f => f.path === file.path).length === 0) {
-                let myFile = file as ImageFile;
+                
+                var blob = file.slice(0, file.size, 'image/png');
+                let newFile = new File([blob], `${uuidv4()}.png`, { type: 'image/png' });
+
+                let myFile = newFile as ImageFile;
+
                 myFile.preview = URL.createObjectURL(file);
                 imagesCopy.push(myFile);
             }
@@ -137,9 +143,9 @@ export const ImageUploader = (props: Props) => {
                             alt={file.name}
                         />
                         <div className={classes.deleteParent}>
-                        <IconButton onClick={()=> removeImage(file.name)} aria-label="delete">
-                            <CancelIcon/>
-                        </IconButton>
+                            <IconButton onClick={() => removeImage(file.name)} aria-label="delete">
+                                <CancelIcon />
+                            </IconButton>
                         </div>
 
                     </div>

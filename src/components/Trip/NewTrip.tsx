@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -42,18 +42,19 @@ export const NewTrip = (props: Props) => {
     const resetTrips = () => forceResetTrips((n) => n + 1);
     const trip = useRecoilValue(editingTripState)
     const history = useHistory();
+    const [loading, setloading] = useState(false)
 
     useEffect(() => {
         setEditingTrip(getNewTrip());
     }, [setEditingTrip])
 
     const onSubmit = async () => {
+        setloading(true)
         await createNewTrip(trip);
+        setloading(false)
         resetTrips()
         setEditingTrip(getNewTrip()); 
         history.push('/')       
-
-        console.log('submit ', trip)
     }
 
     const onCancel = () => {        
@@ -74,6 +75,10 @@ export const NewTrip = (props: Props) => {
         tripCopy[fieldId] = e.target.value
 
         setEditingTrip(tripCopy);
+    }
+
+    if(loading){
+        return <div>Saving Trip ...</div>
     }
 
     return (

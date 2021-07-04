@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Models;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Cosmos.Table;
@@ -54,10 +56,49 @@ namespace api.Helpers
         {
             var containerClient = _blobServiceClient.GetBlobContainerClient(_imageContainerName);
             var blobClient = containerClient.GetBlobClient(file.FileName);
-            using (var stream = file.OpenReadStream())
+
+            try
             {
-                await blobClient.UploadAsync(stream, true);
+                using (var stream = file.OpenReadStream())
+                {
+                    var response = await blobClient.UploadAsync(stream, true);
+                    Console.WriteLine(response);
+
+                }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine("Catch"+e);
+                var blobLeaseClient = blobClient.GetBlobLeaseClient();
+                try
+                {
+                    BlobLease blobLease = await blobLeaseClient.AcquireAsync(TimeSpan.FromSeconds(15));
+                    Console.WriteLine("Blob lease acquired. LeaseId = {0}", blobLease.LeaseId);
+
+                    // Set the request condition to include the lease ID.
+                    var blobUploadOptions = new BlobUploadOptions()
+                    {
+                        Conditions = new BlobRequestConditions()
+                        {
+                            LeaseId = blobLease.LeaseId
+                        }
+                    };
+                    using (var stream = file.OpenReadStream())
+                    {
+                        var response = await blobClient.UploadAsync(stream, blobUploadOptions);
+                    };
+
+                }
+                finally
+                {
+                    await blobLeaseClient.ReleaseAsync();
+                }
+
+                
+
+                
+            }
+            
         }
 
         private static async Task<T> MergeEntity<T>(T entity, string tableName) where T : TableEntity, new()
