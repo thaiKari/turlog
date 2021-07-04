@@ -29,17 +29,17 @@ async function saveTrip(trip: Trip): Promise<any> {
 }
 
 async function uploadImages(trip: TripWithImageFiles): Promise<any> {
-  trip.imageFiles &&
-    trip.imageFiles.forEach(async (file) => {
-      const body = new FormData();
-      body.append('data', file);      
+  if (!trip.imageFiles) return;
+  for (let i = 0; i < trip.imageFiles.length; i++) {
+    const image = trip.imageFiles[i];
+    const body = new FormData();
+      body.append('data', image);      
       await fetch("/api/images/upload",
       {
           body: body,
           method: "post"
       });
-    });
-
+  }
 }
 
 async function post(
