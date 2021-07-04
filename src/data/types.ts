@@ -12,9 +12,11 @@ export interface Trip {
 }
 
 export interface ImageFile extends FileWithPath {
+    dateSuggestion?: Date;
     preview: string
 }
 
 export interface TripWithImageFiles extends Trip {
-    imageFiles?: ImageFile[]
+    imageFiles?: ImageFile[],
+    dateSuggestion?: Date
 }

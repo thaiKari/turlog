@@ -11,11 +11,10 @@ export async function getImageBaseUrl(): Promise<string> {
   return settings["imagesurl"];
 }
 
-export async function createNewTrip(trip: TripWithImageFiles): Promise<string> {
-  await Promise.allSettled([
-    saveTrip(trip as Trip),
-    uploadImages(trip)]);
-
+export async function createNewTrip(trip: TripWithImageFiles): Promise<string> {  
+  
+  await saveTrip(trip as Trip)
+  await uploadImages(trip)
   return "true";
 }
 
@@ -30,7 +29,6 @@ async function saveTrip(trip: Trip): Promise<any> {
 }
 
 async function uploadImages(trip: TripWithImageFiles): Promise<any> {
-  
   trip.imageFiles &&
     trip.imageFiles.forEach(async (file) => {
       const body = new FormData();

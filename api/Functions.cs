@@ -61,8 +61,10 @@ namespace api
             var imageFiles = (await req.ReadFormAsync()).Files;
             var storageHelper = ConfigHelper.GetStorageHelper(context);
             var uploadTasks = new List<Task>();
-            foreach (var file in imageFiles)
+            
+            for (var i = 0; i < imageFiles.Count; i++)
             {
+                var file = imageFiles[i];
                 uploadTasks.Add(storageHelper.UploadFile(file));
             }
 

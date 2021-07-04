@@ -48,6 +48,16 @@ export const NewTrip = (props: Props) => {
         setEditingTrip(getNewTrip());
     }, [setEditingTrip])
 
+    useEffect(() => {
+        if(trip.dateSuggestion){
+            if(!trip.date){
+                setEditingTrip({...trip, date: trip.dateSuggestion });
+            }
+        }
+
+        
+    }, [setEditingTrip, trip, trip.dateSuggestion])
+
     const onSubmit = async () => {
         setloading(true)
         await createNewTrip(trip);

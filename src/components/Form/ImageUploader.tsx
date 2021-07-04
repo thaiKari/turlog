@@ -5,7 +5,6 @@ import { useDropzone, FileWithPath } from 'react-dropzone'
 import { useRecoilState } from 'recoil';
 import { editingTripState } from '../../data/state';
 import { ImageFile, TripWithImageFiles } from '../../data/types';
-import { createCopy } from '../../data/util';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -101,29 +100,40 @@ export const ImageUploader = (props: Props) => {
     } as React.CSSProperties), [isDragActive, theme, isDragAccept, isDragReject]);
 
     useEffect(() => {
-        let imagesCopy: ImageFile[] = createCopy(images)
+        let newFiles: ImageFile[] = [];
         acceptedFiles.forEach((file: FileWithPath) => {
-            if (imagesCopy.filter(f => f.path === file.path).length === 0) {
-                
-                var blob = file.slice(0, file.size, 'image/png');
-                let newFile = new File([blob], `${uuidv4()}.png`, { type: 'image/png' });
 
-                let myFile = newFile as ImageFile;
+            var blob = file.slice(0, file.size, 'image/png');
+            var fileId = uuidv4();
 
-                myFile.preview = URL.createObjectURL(file);
-                imagesCopy.push(myFile);
-            }
+            let newFile = new File([blob], `${fileId}.png`, { type: 'image/png' });
+
+            let myFile = (newFile as FileWithPath) as ImageFile;
+
+            myFile.preview = URL.createObjectURL(file);
+            myFile.dateSuggestion = new Date(file.lastModified);
+            newFiles.push(myFile);
         });
 
-        setimages(imagesCopy)
+        setimages([...images, ...newFiles])
+
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [acceptedFiles])
 
     useEffect(() => {
-        let tripCopy: TripWithImageFiles = createCopy(editingTrip)
-        tripCopy.imageFiles = images;
-        tripCopy.images = images.map(i => i.name)
-        setEditingTrip(tripCopy)
+        let dateSuggesion;
+        if (images.length > 0) {
+            dateSuggesion = images[0].dateSuggestion
+        }
+
+        setEditingTrip({
+            ...editingTrip,
+            images: images.map(f=>f.name),
+            dateSuggestion: dateSuggesion,
+            imageFiles: images
+         })
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [images])
 

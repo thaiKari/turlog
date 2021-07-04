@@ -48,8 +48,6 @@ export const editingTripState = atom({
   export const getNewTrip = (): TripWithImageFiles => {
     return  {
       id: uuidv4(),
-      date: new Date(),
       name: '',
-      
     } as Trip
   }
