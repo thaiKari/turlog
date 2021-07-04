@@ -38,7 +38,7 @@ namespace api
         }
 
         [FunctionName("settings")]
-        public static async Task<IActionResult> GetImageUrl(
+        public static IActionResult GetImageUrl(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "settings")] HttpRequest req,
             ExecutionContext context,
             ILogger log)
