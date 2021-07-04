@@ -1,7 +1,7 @@
 import { IconButton, makeStyles, useTheme } from '@material-ui/core';
 import { Theme } from '@material-ui/core';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react'
-import { useDropzone, FileWithPath } from 'react-dropzone'
+import { useDropzone } from 'react-dropzone'
 import { useRecoilState } from 'recoil';
 import { editingTripState } from '../../data/state';
 import { ImageFile, TripWithImageFiles } from '../../data/types';
@@ -100,23 +100,31 @@ export const ImageUploader = (props: Props) => {
     } as React.CSSProperties), [isDragActive, theme, isDragAccept, isDragReject]);
 
     useEffect(() => {
-        let newFiles: ImageFile[] = [];
-        acceptedFiles.forEach((file: FileWithPath) => {
+        async function handleNewImages() {
+            let newFiles: ImageFile[] = [];
 
-            var blob = file.slice(0, file.size, 'image/png');
-            var fileId = uuidv4();
+            for (let i = 0; i < acceptedFiles.length; i++) {
+                const file = acceptedFiles[i];
+                var fileId = uuidv4();
 
-            let newFile = new File([blob], `${fileId}.png`, { type: 'image/png' });
+                let image = await resizeImage(file);
+                if (!image) {
+                    console.log('no image')
+                    return;
+                };
+                let newFile = (new File([image], `${fileId}.png`, { type: 'image/png' })) as ImageFile;
 
-            let myFile = (newFile as FileWithPath) as ImageFile;
+                newFile.preview = URL.createObjectURL(newFile);
+                newFile.dateSuggestion = new Date(file.lastModified);
+                newFiles.push(newFile);
+            }
 
-            myFile.preview = URL.createObjectURL(file);
-            myFile.dateSuggestion = new Date(file.lastModified);
-            newFiles.push(myFile);
-        });
 
-        setimages([...images, ...newFiles])
+            setimages([...images, ...newFiles])
 
+        }
+
+        handleNewImages()
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [acceptedFiles])
@@ -129,10 +137,10 @@ export const ImageUploader = (props: Props) => {
 
         setEditingTrip({
             ...editingTrip,
-            images: images.map(f=>f.name),
+            images: images.map(f => f.name),
             dateSuggestion: dateSuggesion,
             imageFiles: images
-         })
+        })
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [images])
@@ -179,3 +187,56 @@ export const ImageUploader = (props: Props) => {
 }
 
 
+const resizeImage = (file: File): Promise<Blob | undefined> => {
+    const maxSize = 800;
+    const reader = new FileReader();
+    const image = new Image();
+    const canvas = document.createElement('canvas');
+    const dataURItoBlob = (dataURI: string) => {
+        const bytes = dataURI.split(',')[0].indexOf('base64') >= 0 ?
+            atob(dataURI.split(',')[1]) :
+            unescape(dataURI.split(',')[1]);
+        const mime = 'image/png';
+        const max = bytes.length;
+        const ia = new Uint8Array(max);
+        for (var i = 0; i < max; i++) ia[i] = bytes.charCodeAt(i);
+        return new Blob([ia], { type: mime });
+    };
+    const resize = () => {
+        let width = image.width;
+        let height = image.height;
+
+        if (width > height) {
+            if (width > maxSize) {
+                height *= maxSize / width;
+                width = maxSize;
+            }
+        } else {
+            if (height > maxSize) {
+                width *= maxSize / height;
+                height = maxSize;
+            }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        let ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        ctx.drawImage(image, 0, 0, width, height);
+        let dataUrl = canvas.toDataURL('image/jpeg');
+        return dataURItoBlob(dataUrl);
+    };
+
+    return new Promise((ok, no) => {
+        if (!file.type.match(/image.*/)) {
+            no(new Error("Not an image"));
+            return;
+        }
+
+        reader.onload = (readerEvent: any) => {
+            image.onload = () => ok(resize());
+            image.src = readerEvent.target.result;
+        };
+        reader.readAsDataURL(file);
+    })
+};
