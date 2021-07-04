@@ -1,4 +1,4 @@
-import { Trip } from "./types";
+import { Trip, TripWithImageFiles } from "./types";
 
 export async function getTrips(): Promise<Trip[]> {
   let trips = await (await fetch(`/api/trips`)).json();
@@ -11,23 +11,51 @@ export async function getImageBaseUrl(): Promise<string> {
   return settings["imagesurl"];
 }
 
-export async function createNewTrip(trip: Trip): Promise<string> {
-  const rawResponse = await fetch(`/api/trip`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(trip),
-  });
-  const content = await rawResponse.json();
+export async function createNewTrip(trip: TripWithImageFiles): Promise<string> {
+  await Promise.allSettled([
+    saveTrip(trip as Trip),
+    uploadImages(trip)]);
 
-  console.log(content);
-  return content
+  return "true";
 }
 
 function sanitize(trips: Trip[]) {
   trips.forEach((t) => {
     t.date = new Date(t.date.toString());
   });
+}
+
+async function saveTrip(trip: Trip): Promise<any> {
+  return await post("/api/trip", trip);
+}
+
+async function uploadImages(trip: TripWithImageFiles): Promise<any> {
+  let uploadPromises: Promise<any>[] = [];
+  
+  trip.imageFiles &&
+    trip.imageFiles.forEach((file) => {
+      const body = new FormData();
+      body.append('data', file);      
+      uploadPromises.push(fetch("/api/images/upload",
+      {
+          body: body,
+          method: "post"
+      }));
+    });
+
+  return await Promise.allSettled(uploadPromises);
+}
+
+async function post(
+  path: string,
+  body: any,
+  contentType?: string
+): Promise<any> {
+  const rawResponse = await fetch(path, {
+    method: "POST",
+    body: JSON.stringify(body)
+  });
+
+  const content = await rawResponse.json();
+  return content;
 }

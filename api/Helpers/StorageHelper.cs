@@ -5,10 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Models;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.Cosmos.Table.Queryable;
 using Microsoft.Azure.Documents.SystemFunctions;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace api.Helpers
 {
@@ -16,17 +19,21 @@ namespace api.Helpers
     {
         public Task<Trip> CreateTrip(Trip trip);
         public Task<List<Trip>> GetTrips();
+        public Task UploadFile(IFormFile file);
     }
 
     public class StorageHelper: IStorageHelper
     {
         private static CloudTableClient _tableClient;
+        private static BlobServiceClient _blobServiceClient;
         private const string _tableName = "trip";
+        private const string _imageContainerName = "images";
 
         public StorageHelper(string storageConnectionString)
         {
             var storageAccount = CloudStorageAccount.Parse(storageConnectionString);
             _tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
+            _blobServiceClient = new BlobServiceClient(storageConnectionString);
         }
 
         public async Task<Trip> CreateTrip(Trip trip)
@@ -41,6 +48,16 @@ namespace api.Helpers
             var trips = tripEntities.Select(p => p.ToTrip()).ToList();
 
             return trips;
+        }
+
+        public async Task UploadFile(IFormFile file)
+        {
+            var containerClient = _blobServiceClient.GetBlobContainerClient(_imageContainerName);
+            var blobClient = containerClient.GetBlobClient(file.FileName);
+            using (var stream = file.OpenReadStream())
+            {
+                await blobClient.UploadAsync(stream, true);
+            }
         }
 
         private static async Task<T> MergeEntity<T>(T entity, string tableName) where T : TableEntity, new()
