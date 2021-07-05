@@ -3,7 +3,6 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import DateFnsUtils from '@date-io/date-fns';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { editingTripState, getNewTrip, updateTripsState } from '../../data/state';
-import { createCopy } from '../../data/util';
 import { FormControl, TextField, Grid, makeStyles, Button } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
