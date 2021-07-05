@@ -12,9 +12,11 @@ export async function getImageBaseUrl(): Promise<string> {
 }
 
 export async function createNewTrip(trip: TripWithImageFiles): Promise<string> {  
+  await(Promise.all([
+    saveTrip(trip as Trip),
+    uploadImages(trip)
+  ]))
   
-  await saveTrip(trip as Trip)
-  await uploadImages(trip)
   return "true";
 }
 
@@ -30,16 +32,19 @@ async function saveTrip(trip: Trip): Promise<any> {
 
 async function uploadImages(trip: TripWithImageFiles): Promise<any> {
   if (!trip.imageFiles) return;
+  let tasks = []
   for (let i = 0; i < trip.imageFiles.length; i++) {
     const image = trip.imageFiles[i];
     const body = new FormData();
       body.append('data', image);      
-      await fetch("/api/images/upload",
+      tasks.push(fetch("/api/images/upload",
       {
           body: body,
           method: "post"
-      });
+      })) ;
   }
+
+  await Promise.all(tasks);
 }
 
 async function post(

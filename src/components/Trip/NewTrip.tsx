@@ -54,8 +54,6 @@ export const NewTrip = (props: Props) => {
                 setEditingTrip({...trip, date: trip.dateSuggestion });
             }
         }
-
-        
     }, [setEditingTrip, trip, trip.dateSuggestion])
 
     const onSubmit = async () => {
@@ -63,7 +61,6 @@ export const NewTrip = (props: Props) => {
         await createNewTrip(trip);
         setloading(false)
         resetTrips()
-        setEditingTrip(getNewTrip()); 
         history.push('/')       
     }
 
@@ -160,7 +157,7 @@ export const NewTrip = (props: Props) => {
                 </Grid>
             </Grid>
             
-            <Button className={classes.button} variant='contained' color='primary' onClick={async () => await onSubmit()}>
+            <Button className={classes.button} variant='contained' color='primary' onClick={onSubmit}>
                 Save
             </Button>
             <Button  className={classes.button}  variant='outlined' color='primary' onClick={onCancel}>
