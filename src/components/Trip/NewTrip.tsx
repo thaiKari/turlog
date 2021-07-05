@@ -46,7 +46,8 @@ export const NewTrip = (props: Props) => {
 
     useEffect(() => {
         setEditingTrip(getNewTrip());
-    }, [setEditingTrip])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     useEffect(() => {
         if(trip.dateSuggestion){
@@ -61,6 +62,7 @@ export const NewTrip = (props: Props) => {
         await createNewTrip(trip);
         setloading(false)
         resetTrips()
+        setEditingTrip(getNewTrip())
         history.push('/')       
     }
 
@@ -71,14 +73,13 @@ export const NewTrip = (props: Props) => {
 
 
     const handleDateChange = (date: Date | null) => {
-        let tripCopy = createCopy(trip);
-        tripCopy.date = date
-        setEditingTrip(tripCopy);
+        if (!date) return;
+        setEditingTrip({...trip, date: date});
     };
 
     const onTextFieldChangeHandler = (fieldId: 'name' | 'description' | 'parking') => (e: any) => {
 
-        let tripCopy = createCopy(trip);
+        let tripCopy = {...trip};
         tripCopy[fieldId] = e.target.value
 
         setEditingTrip(tripCopy);
