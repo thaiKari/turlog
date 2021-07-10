@@ -1,4 +1,4 @@
-import { IconButton, makeStyles, useTheme } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core';
 import { Theme } from '@material-ui/core';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'

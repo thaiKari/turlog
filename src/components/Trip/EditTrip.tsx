@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { editingTripState, getNewTrip, selectedTripIdState, selectedTripState } from '../../data/state';
+import { editingTripState, selectedTripIdState, selectedTripState } from '../../data/state';
 import { TripForm } from '../Form/TripForm';
 
 interface Props {
