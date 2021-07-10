@@ -96,7 +96,7 @@ export const TripForm = ({title}: Props) => {
                             variant="inline"
                             format="MM/dd/yyyy"
                             label="Date"
-                            value={trip.date}
+                            value={trip.date ?? ''}
                             onChange={handleDateChange}
                             KeyboardButtonProps={{
                                 'aria-label': 'change date',
@@ -111,7 +111,7 @@ export const TripForm = ({title}: Props) => {
                     <FormControl style={{ width: '100%' }}>
                         <TextField
                             className={classes.formItem}
-                            value={trip.name}
+                            value={trip.name ?? ''}
                             onChange={onTextFieldChangeHandler('name')}
                             label="Trip Name"
                             variant="outlined"
@@ -123,11 +123,11 @@ export const TripForm = ({title}: Props) => {
                     <FormControl style={{ width: '100%' }}>
                         <TextField
                             className={classes.formItem}
-                            value={trip.description}
+                            value={trip.description ?? ''}
                             onChange={onTextFieldChangeHandler('description')}
                             label="Description"
                             multiline
-                            rowsMax={10}
+                            maxRows={10}
                             variant="outlined"
                         />
                     </FormControl>
@@ -136,11 +136,11 @@ export const TripForm = ({title}: Props) => {
                     <FormControl style={{ width: '100%' }}>
                         <TextField
                             className={classes.formItem}
-                            value={trip.parking}
+                            value={trip.parking ?? ''}
                             onChange={onTextFieldChangeHandler('parking')}
                             label="Parking"
                             multiline
-                            rowsMax={10}
+                            maxRows={10}
                             variant="outlined"
                         />
                     </FormControl>

@@ -82,7 +82,6 @@ export const ImageUploader = (props: Props) => {
 
                 let image = await resizeImage(file);
                 if (!image) {
-                    console.log('no image')
                     return;
                 };
                 let newFile = (new File([image], `${fileId}.png`, { type: 'image/png' })) as ImageFile;
@@ -119,7 +118,6 @@ export const ImageUploader = (props: Props) => {
 
     useEffect(() => {
         if(!editingTrip.images) return;
-        console.log(editingTrip.images) 
 
         setExistingImages(editingTrip.images);
         // eslint-disable-next-line react-hooks/exhaustive-deps
