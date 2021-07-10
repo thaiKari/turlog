@@ -96,7 +96,7 @@ export const TripForm = ({title}: Props) => {
                             variant="inline"
                             format="MM/dd/yyyy"
                             label="Date"
-                            value={trip.date ?? ''}
+                            value={trip.date}
                             onChange={handleDateChange}
                             KeyboardButtonProps={{
                                 'aria-label': 'change date',
