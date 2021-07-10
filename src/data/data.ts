@@ -1,4 +1,4 @@
-import { Trip, TripWithImageFiles } from "./types";
+import { ImageFile, Trip } from "./types";
 
 export async function getTrips(): Promise<Trip[]> {
   let trips = await (await fetch(`/api/trips`)).json();
@@ -11,10 +11,14 @@ export async function getImageBaseUrl(): Promise<string> {
   return settings["imagesurl"];
 }
 
-export async function createOrUpdateTrip(trip: TripWithImageFiles): Promise<string> {  
+export async function createOrUpdateTrip(trip: Trip, imageFiles: ImageFile[]): Promise<string> {
+
+  const existingIms = trip.images ?? [];
+  const imageNames = [...existingIms, ...imageFiles.map(im => im.name)];
+
   await(Promise.all([
-    saveTrip(trip as Trip),
-    uploadImages(trip)
+    saveTrip({...trip, images:imageNames} as Trip),
+    uploadImages(imageFiles)
   ]))
   
   return "true";
@@ -30,11 +34,10 @@ async function saveTrip(trip: Trip): Promise<any> {
   return await post("/api/trip", trip);
 }
 
-async function uploadImages(trip: TripWithImageFiles): Promise<any> {
-  if (!trip.imageFiles) return;
+async function uploadImages(imageFiles: ImageFile[]): Promise<any> {
   let tasks = []
-  for (let i = 0; i < trip.imageFiles.length; i++) {
-    const image = trip.imageFiles[i];
+  for (let i = 0; i < imageFiles.length; i++) {
+    const image = imageFiles[i];
     const body = new FormData();
       body.append('data', image);      
       tasks.push(fetch("/api/images/upload",

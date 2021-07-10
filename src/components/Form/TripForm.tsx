@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { editingTripState, getNewTrip, updateTripsState } from '../../data/state';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { editingTripState, getNewTrip, imageFilesState, updateTripsState } from '../../data/state';
 import { FormControl, TextField, Grid, makeStyles, Button } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
@@ -40,32 +40,46 @@ export const TripForm = ({title}: Props) => {
     const setEditingTrip = useSetRecoilState(editingTripState)
     const forceResetTrips = useSetRecoilState(updateTripsState);
     const resetTrips = () => forceResetTrips((n) => n + 1);
-    const trip = useRecoilValue(editingTripState)
+    const trip = useRecoilValue(editingTripState) ?? getNewTrip();
     const history = useHistory();
     const [loading, setloading] = useState(false)
+    const [imageFiles, setImageFiles] = useRecoilState(imageFilesState);
+    const [dateSuggestion, setdateSuggestion] = useState(new Date())
+
 
     useEffect(() => {
-        if(trip.dateSuggestion){
-            if(!trip.date){
-                setEditingTrip({...trip, date: trip.dateSuggestion });
-            }
+        if(!imageFiles) return;
+        if(imageFiles.length > 0){
+            const suggestion = imageFiles[0].dateSuggestion
+            if(!suggestion) return;
+            setdateSuggestion(suggestion)
         }
-    }, [setEditingTrip, trip, trip.dateSuggestion])
+    }, [imageFiles])
 
     const onSubmit = async () => {
         setloading(true)
-        await createOrUpdateTrip(trip);
+        await createOrUpdateTrip(trip, imageFiles);
+        setImageFiles([])
         setloading(false)
         resetTrips()
         setEditingTrip(getNewTrip())
         history.push('/')       
     }
 
-    const onCancel = () => {        
+    const onRemoveImage = useCallback(
+        (imageName: string) => {
+            setEditingTrip({
+                ...trip,
+                images: trip.images?.filter(n=> n !== imageName)})
+        },
+        [setEditingTrip, trip],
+    )
+
+    const onCancel = () => {
+        setImageFiles([])        
         setEditingTrip(getNewTrip());
         history.push('/')
     }
-
 
     const handleDateChange = (date: Date | null) => {
         if (!date) return;
@@ -80,7 +94,7 @@ export const TripForm = ({title}: Props) => {
         setEditingTrip(tripCopy);
     }
 
-    if(loading){
+    if(loading ){
         return <div>Saving Trip ...</div>
     }
 
@@ -96,7 +110,7 @@ export const TripForm = ({title}: Props) => {
                             variant="inline"
                             format="MM/dd/yyyy"
                             label="Date"
-                            value={trip.date}
+                            value={trip.date ?? dateSuggestion}
                             onChange={handleDateChange}
                             KeyboardButtonProps={{
                                 'aria-label': 'change date',
@@ -148,7 +162,7 @@ export const TripForm = ({title}: Props) => {
 
                 <Grid item xs={12} sm={12}>
                     <FormControl style={{ width: '100%' }}>
-                        <ImageUploader/>
+                        <ImageUploader onRemoveImage={onRemoveImage}/>
                     </FormControl>
                 </Grid>
             </Grid>

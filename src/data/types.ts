@@ -15,8 +15,3 @@ export interface ImageFile extends FileWithPath {
     dateSuggestion?: Date;
     preview: string
 }
-
-export interface TripWithImageFiles extends Trip {
-    imageFiles?: ImageFile[],
-    dateSuggestion?: Date
-}

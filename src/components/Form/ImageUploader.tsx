@@ -1,16 +1,14 @@
 import { makeStyles, useTheme } from '@material-ui/core';
 import { Theme } from '@material-ui/core';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react'
+import React, { ReactNode, useEffect, useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { editingTripState, imagesBaseUrlState } from '../../data/state';
-import { ImageFile, TripWithImageFiles } from '../../data/types';
+import { editingTripState, imageFilesState, imagesBaseUrlState } from '../../data/state';
+import { ImageFile } from '../../data/types';
 import { v4 as uuidv4 } from 'uuid';
 import { ImagePreview } from './ImagePreview';
 
-interface Props {
 
-}
 
 const baseStyle = {
     flex: 1,
@@ -48,8 +46,11 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+interface Props {
+    onRemoveImage: (imageName: string) => void
+}
 
-export const ImageUploader = (props: Props) => {
+export const ImageUploader = ({onRemoveImage}: Props) => {
     const theme = useTheme();
     const imagesUrl = useRecoilValue(imagesBaseUrlState);
     const classes = useStyles();
@@ -61,9 +62,8 @@ export const ImageUploader = (props: Props) => {
             accept: 'image/*'
         });
 
-    const [images, setimages] = useState<ImageFile[]>([]);
-    const [editingTrip, setEditingTrip] = useRecoilState<TripWithImageFiles>(editingTripState);
-    const [existingImages, setExistingImages] = useState<string[]>([])
+    const [images, setimages] = useRecoilState<ImageFile[]>(imageFilesState);
+    const editingTrip = useRecoilValue(editingTripState);
 
     const style = useMemo(() => ({
         ...baseStyle,
@@ -91,37 +91,13 @@ export const ImageUploader = (props: Props) => {
                 newFiles.push(newFile);
             }
 
-            setimages([...images, ...newFiles])
+            setimages((images) => [...images, ...newFiles])
 
         }
 
         handleNewImages()
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [acceptedFiles])
-
-    useEffect(() => {
-        let dateSuggesion;
-        if (images.length > 0) {
-            dateSuggesion = images[0].dateSuggestion
-        }
-
-        setEditingTrip({
-            ...editingTrip,
-            images: [ ...existingImages, ...images.map(f => f.name)] ,
-            dateSuggestion: dateSuggesion,
-            imageFiles: images
-        })
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [images])
-
-    useEffect(() => {
-        if(!editingTrip.images) return;
-
-        setExistingImages(editingTrip.images);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [editingTrip.id])
+    }, [acceptedFiles, setimages])
 
 
     const preview = (): ReactNode => {
@@ -139,21 +115,18 @@ export const ImageUploader = (props: Props) => {
     };
 
 
-    const removeExistingImage = (imageName: string ) => {
-        setExistingImages(existingImages.filter( n => n !== imageName))
-    }
-
-
     const previewExistingImages = (): ReactNode => {
-
+        
+        if(!editingTrip) return;
+    
         return (
-            existingImages &&
-            existingImages.map(imageName => {
+            editingTrip.images &&
+            editingTrip.images.map(imageName => {
                 return (
                     <ImagePreview
                         key={imageName}
                         src={`${imagesUrl}${imageName}`}
-                        onRemove={()=> removeExistingImage(imageName)}
+                        onRemove={()=> onRemoveImage(imageName)}
                     />)
 
             })
@@ -173,7 +146,6 @@ export const ImageUploader = (props: Props) => {
         </section>
     );
 }
-
 
 const resizeImage = (file: File): Promise<Blob | undefined> => {
     const maxSize = 800;
