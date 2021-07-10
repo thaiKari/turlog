@@ -11,16 +11,27 @@ export async function getImageBaseUrl(): Promise<string> {
   return settings["imagesurl"];
 }
 
-export async function createOrUpdateTrip(trip: Trip, imageFiles: ImageFile[]): Promise<string> {
+export async function deleteTrip(id: string): Promise<void> {
+  console.log("delete", id);
+  try {
+    await fetch(`/api/trip/${id}`, { method: "DELETE" });
+  } catch (error) {
+    console.log(error);
+  }
+}
 
+export async function createOrUpdateTrip(
+  trip: Trip,
+  imageFiles: ImageFile[]
+): Promise<string> {
   const existingIms = trip.images ?? [];
-  const imageNames = [...existingIms, ...imageFiles.map(im => im.name)];
+  const imageNames = [...existingIms, ...imageFiles.map((im) => im.name)];
 
-  await(Promise.all([
-    saveTrip({...trip, images:imageNames} as Trip),
-    uploadImages(imageFiles)
-  ]))
-  
+  await Promise.all([
+    saveTrip({ ...trip, images: imageNames } as Trip),
+    uploadImages(imageFiles),
+  ]);
+
   return "true";
 }
 
@@ -35,16 +46,17 @@ async function saveTrip(trip: Trip): Promise<any> {
 }
 
 async function uploadImages(imageFiles: ImageFile[]): Promise<any> {
-  let tasks = []
+  let tasks = [];
   for (let i = 0; i < imageFiles.length; i++) {
     const image = imageFiles[i];
     const body = new FormData();
-      body.append('data', image);      
-      tasks.push(fetch("/api/images/upload",
-      {
-          body: body,
-          method: "post"
-      })) ;
+    body.append("data", image);
+    tasks.push(
+      fetch("/api/images/upload", {
+        body: body,
+        method: "post",
+      })
+    );
   }
 
   await Promise.all(tasks);
@@ -57,7 +69,7 @@ async function post(
 ): Promise<any> {
   const rawResponse = await fetch(path, {
     method: "POST",
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   });
 
   const content = await rawResponse.json();

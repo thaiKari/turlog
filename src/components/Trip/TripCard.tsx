@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Trip } from "../../data/types";
 import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, IconButton, makeStyles, Menu, MenuItem, Typography } from '@material-ui/core';
-import { useRecoilValue } from "recoil";
-import { imagesBaseUrlState } from "../../data/state";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { imagesBaseUrlState, updateTripsState } from "../../data/state";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useHistory } from "react-router-dom";
+import { deleteTrip } from "../../data/data";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,8 +31,9 @@ interface Props {
 export const TripCard: React.FC<Props> = ({ trip }) => {
   const classes = useStyles();
   const imagesUrl = useRecoilValue(imagesBaseUrlState);
+  const updateTrips = useSetRecoilState(updateTripsState);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const history = useHistory()
+  const history = useHistory();
 
   const getImageUrl = (images: string[] | undefined): string => {
     let imageName = 'placeholder.png'
@@ -49,8 +51,14 @@ export const TripCard: React.FC<Props> = ({ trip }) => {
 
   const onEditClick = (event: React.MouseEvent<HTMLLIElement>) => {
     history.push(`/trip/edit/${trip.id}`);
-    setAnchorEl(event.currentTarget);
   };
+
+  const onDeleteClick = async (event: React.MouseEvent<HTMLLIElement>) => {
+    await deleteTrip(trip.id);
+    updateTrips(n => n+1);
+    setAnchorEl(null);
+  };
+
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -96,10 +104,9 @@ export const TripCard: React.FC<Props> = ({ trip }) => {
         onClose={handleMenuClose}
       >
         <MenuItem onClick={onEditClick}>Edit</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Delete</MenuItem>
+        <MenuItem onClick={onDeleteClick}>Delete</MenuItem>
       </Menu>
     </div>
-
   );;
 };
 

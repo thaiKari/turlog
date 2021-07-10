@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using api.Helpers;
 using api.Models;
@@ -35,6 +36,18 @@ namespace api
             var storageHelper = ConfigHelper.GetStorageHelper(context);
             var insertedTrip = await storageHelper.CreateTrip(trip);
             return new OkObjectResult(insertedTrip);
+        }
+
+        [FunctionName("DeleteTrip")]
+        public static async Task<IActionResult> DeletePerson(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "trip/{id}")] HttpRequest req,
+            ExecutionContext context,
+            ILogger log, string id)
+        {
+            var storageHelper = ConfigHelper.GetStorageHelper(context);
+            await storageHelper.DeleteTrip(id);
+            return new ObjectResult($"person with id {id} was deleted");
+
         }
 
         [FunctionName("settings")]
