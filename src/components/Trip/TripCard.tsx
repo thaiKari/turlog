@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Trip } from "../../data/types";
-import {Button, Card, CardActionArea, CardActions, CardContent, CardMedia, makeStyles, Typography} from '@material-ui/core';
+import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, IconButton, makeStyles, Menu, MenuItem, Typography } from '@material-ui/core';
 import { useRecoilValue } from "recoil";
 import { imagesBaseUrlState } from "../../data/state";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { useHistory } from "react-router-dom";
 
-const useStyles = makeStyles((theme) =>({
+const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: 345,
     margin: theme.spacing(2)
@@ -15,6 +17,10 @@ const useStyles = makeStyles((theme) =>({
   pos: {
     marginBottom: 12,
   },
+  actions: {
+    display: 'flex',
+    justifyContent: 'space-between'
+  }
 }));
 
 interface Props {
@@ -24,44 +30,76 @@ interface Props {
 export const TripCard: React.FC<Props> = ({ trip }) => {
   const classes = useStyles();
   const imagesUrl = useRecoilValue(imagesBaseUrlState);
-  
-  const getImageUrl = (images: string[] | undefined) : string => {
-    let imageName = 'placeholder.png'    
-    if(images && images[0]){
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const history = useHistory()
+
+  const getImageUrl = (images: string[] | undefined): string => {
+    let imageName = 'placeholder.png'
+    if (images && images[0]) {
       imageName = images[0]
-    }  
+    }
 
     return `${imagesUrl}${imageName}`
   }
 
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => { 
+    setAnchorEl(event.currentTarget);
+  };
+  
 
-  return  (
-    <Card className={classes.root}>
-      <CardActionArea>
-        <CardMedia
-          className={classes.media}
-          image={getImageUrl(trip.images)}
-          title="Contemplative Reptile"
-        />
-        <CardContent>
-        
-          <Typography variant="h5" component="h2">
-            {trip.name}
-          </Typography> 
-          <Typography gutterBottom className={classes.pos} color="textSecondary" >
-            {trip.date.toLocaleDateString()}
-          </Typography>         
-          <Typography variant="body2" component="p">
-            {trip.description ? trip.description: ''}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-      <CardActions>
-        <Button size="small" color="primary">
-          See More
-        </Button>
-      </CardActions>
-    </Card>
+  const onEditClick = (event: React.MouseEvent<HTMLLIElement>) => {
+    history.push(`/trip/edit/${trip.id}`);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+
+  return (
+    <div>
+      <Card className={classes.root}>
+        <CardActionArea>
+          <CardMedia
+            className={classes.media}
+            image={getImageUrl(trip.images)}
+            title="Contemplative Reptile"
+          />
+          <CardContent>
+
+            <Typography variant="h5" component="h2">
+              {trip.name}
+            </Typography>
+            <Typography gutterBottom className={classes.pos} color="textSecondary" >
+              {trip.date.toLocaleDateString()}
+            </Typography>
+            <Typography variant="body2" component="p">
+              {trip.description ? trip.description : ''}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+        <CardActions className={classes.actions} >
+          <Button size="small" color="primary">
+            See More
+          </Button>
+          <IconButton size="small" onClick={handleMenuClick} >
+            <MoreVertIcon fontSize="inherit" />
+          </IconButton>
+        </CardActions>
+      </Card>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={onEditClick}>Edit</MenuItem>
+        <MenuItem onClick={handleMenuClose}>Delete</MenuItem>
+      </Menu>
+    </div>
+
   );;
 };
 

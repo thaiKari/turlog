@@ -1,6 +1,6 @@
 import { atom, selector } from "recoil";
 import { getTrips, getImageBaseUrl } from "./data";
-import { Trip, TripWithImageFiles } from "./types";
+import { ImageFile, Trip } from "./types";
 import { v4 as uuidv4 } from 'uuid';
 
 export const updateTripsState = atom({
@@ -24,30 +24,20 @@ export const imagesBaseUrlState = atom({
     }), 
   });
 
-  export const selectedTripIdState = atom({
-    key: 'selectedTripIdState',
-    default: '' as string
-  });
-  
-  export const selectedTripState = selector({
-    key: 'selectedTripState',
-    get: ({ get }) => {
-      const trips: Trip[] = get(tripsState);
-      const selectedTripId: string = get(selectedTripIdState);
-      const trip = trips.find(p => p.id === selectedTripId);
-      if (!trip) return getNewTrip();
-      return trip as TripWithImageFiles
-    }
-  });
 
-export const editingTripState = atom({
-    key: 'editingTripState',
-    default: selectedTripState 
-  });
-
-  export const getNewTrip = (): TripWithImageFiles => {
+export const getNewTrip = (): Trip => {
     return  {
       id: uuidv4(),
       name: '',
     } as Trip
   }
+
+export const editingTripState = atom<Trip | undefined>({
+    key: 'editingTripState',
+    default: getNewTrip() 
+  });
+
+export const imageFilesState = atom({
+    key: 'imageFilesState',
+    default: [] as ImageFile[]
+  });  

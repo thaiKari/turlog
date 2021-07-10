@@ -1,16 +1,14 @@
-import { IconButton, makeStyles, useTheme } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core';
 import { Theme } from '@material-ui/core';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react'
+import React, { ReactNode, useEffect, useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { useRecoilState } from 'recoil';
-import { editingTripState } from '../../data/state';
-import { ImageFile, TripWithImageFiles } from '../../data/types';
-import CancelIcon from '@material-ui/icons/Cancel';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { editingTripState, imageFilesState, imagesBaseUrlState } from '../../data/state';
+import { ImageFile } from '../../data/types';
 import { v4 as uuidv4 } from 'uuid';
+import { ImagePreview } from './ImagePreview';
 
-interface Props {
 
-}
 
 const baseStyle = {
     flex: 1,
@@ -45,43 +43,18 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginTop: 16
-    },
-    thumb: {
-        display: 'inline-flex',
-        borderRadius: 2,
-        border: '1px solid #eaeaea',
-        marginBottom: 8,
-        marginRight: 8,
-        width: 100,
-        height: 100,
-        padding: 4,
-        boxSizing: 'border-box'
-    },
-    thumbInner: {
-        display: 'flex',
-        minWidth: 0,
-        overflow: 'hidden'
-    },
-    img: {
-        display: 'block',
-        width: 'auto',
-        height: '100%'
-    },
-    deleteParent: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'flex-end',
-        width: 100,
-        position: 'absolute',
-        marginTop: -10
     }
 }));
 
+interface Props {
+    onRemoveImage: (imageName: string) => void
+}
 
-
-export const ImageUploader = (props: Props) => {
+export const ImageUploader = ({onRemoveImage}: Props) => {
+    const theme = useTheme();
+    const imagesUrl = useRecoilValue(imagesBaseUrlState);
     const classes = useStyles();
-    const theme = useTheme()
+
     const { acceptedFiles, getRootProps, getInputProps,
         isDragActive,
         isDragAccept,
@@ -89,8 +62,8 @@ export const ImageUploader = (props: Props) => {
             accept: 'image/*'
         });
 
-    const [images, setimages] = useState<ImageFile[]>([]);
-    const [editingTrip, setEditingTrip] = useRecoilState<TripWithImageFiles>(editingTripState);
+    const [images, setimages] = useRecoilState<ImageFile[]>(imageFilesState);
+    const editingTrip = useRecoilValue(editingTripState);
 
     const style = useMemo(() => ({
         ...baseStyle,
@@ -109,7 +82,6 @@ export const ImageUploader = (props: Props) => {
 
                 let image = await resizeImage(file);
                 if (!image) {
-                    console.log('no image')
                     return;
                 };
                 let newFile = (new File([image], `${fileId}.png`, { type: 'image/png' })) as ImageFile;
@@ -119,59 +91,47 @@ export const ImageUploader = (props: Props) => {
                 newFiles.push(newFile);
             }
 
-
-            setimages([...images, ...newFiles])
+            setimages((images) => [...images, ...newFiles])
 
         }
 
         handleNewImages()
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [acceptedFiles])
-
-    useEffect(() => {
-        let dateSuggesion;
-        if (images.length > 0) {
-            dateSuggesion = images[0].dateSuggestion
-        }
-
-        setEditingTrip({
-            ...editingTrip,
-            images: images.map(f => f.name),
-            dateSuggestion: dateSuggesion,
-            imageFiles: images
-        })
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [images])
-
-    const removeImage = (name: string): void => {
-        setimages(images.filter(i => i.name !== name))
-    }
+    }, [acceptedFiles, setimages])
 
 
-    const preview = (files: ImageFile[]): ReactNode => {
-        return (files &&
-            files.map(file => (
-                <div className={classes.thumb} key={file.name}>
-                    <div className={classes.thumbInner}>
-                        <img
-                            src={file.preview}
-                            className={classes.img}
-                            alt={file.name}
-                        />
-                        <div className={classes.deleteParent}>
-                            <IconButton onClick={() => removeImage(file.name)} aria-label="delete">
-                                <CancelIcon />
-                            </IconButton>
-                        </div>
-
-                    </div>
-                </div>
+    const preview = (): ReactNode => {
+        if (!images) return undefined;
+        return (
+            images &&
+            images.map(file => (
+                <ImagePreview
+                    key={file.name}
+                    src={file.preview}
+                    onRemove={() => setimages(images.filter(i => i.name !== file.name))}
+                />
             ))
         )
     };
 
+
+    const previewExistingImages = (): ReactNode => {
+        
+        if(!editingTrip) return;
+    
+        return (
+            editingTrip.images &&
+            editingTrip.images.map(imageName => {
+                return (
+                    <ImagePreview
+                        key={imageName}
+                        src={`${imagesUrl}${imageName}`}
+                        onRemove={()=> onRemoveImage(imageName)}
+                    />)
+
+            })
+        )
+    };
 
     return (
         <section className="container">
@@ -180,12 +140,12 @@ export const ImageUploader = (props: Props) => {
                 <p>Upload Images</p>
             </div>
             <aside className={classes.thumbsContainer}>
-                {preview(images)}
+                {preview()}
+                {previewExistingImages()}
             </aside>
         </section>
     );
 }
-
 
 const resizeImage = (file: File): Promise<Blob | undefined> => {
     const maxSize = 800;

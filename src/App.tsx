@@ -8,6 +8,7 @@ import {
   Route
 } from "react-router-dom";
 import { NewTrip } from "./components/Trip/NewTrip";
+import { EditTrip } from "./components/Trip/EditTrip";
 
 export const App = () => {
   return (
@@ -17,6 +18,7 @@ export const App = () => {
         <Suspense fallback={<div>Loading ...</div>}>
         <Switch>
           <Route path="/trip/new" component={NewTrip} />
+          <Route path="/trip/edit/:id" component={EditTrip} />
           <Route path="/" component={TripList} />
           </Switch>
         </Suspense>
