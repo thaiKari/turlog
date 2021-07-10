@@ -12,7 +12,6 @@ export async function getImageBaseUrl(): Promise<string> {
 }
 
 export async function deleteTrip(id: string): Promise<void> {
-  console.log("delete", id);
   try {
     await fetch(`/api/trip/${id}`, { method: "DELETE" });
   } catch (error) {
