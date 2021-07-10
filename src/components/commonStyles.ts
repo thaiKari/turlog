@@ -8,6 +8,6 @@ export const useCommonStyles = makeStyles((theme) =>({
     flexEndParent: {
         display:'flex',
         justifyContent:'flex-end',
-        marginRight: theme.spacing(6)
+        marginRight: theme.spacing(2)
       }
   }));

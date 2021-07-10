@@ -11,7 +11,7 @@ export async function getImageBaseUrl(): Promise<string> {
   return settings["imagesurl"];
 }
 
-export async function createNewTrip(trip: TripWithImageFiles): Promise<string> {  
+export async function createOrUpdateTrip(trip: TripWithImageFiles): Promise<string> {  
   await(Promise.all([
     saveTrip(trip as Trip),
     uploadImages(trip)

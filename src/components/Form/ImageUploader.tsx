@@ -2,11 +2,11 @@ import { IconButton, makeStyles, useTheme } from '@material-ui/core';
 import { Theme } from '@material-ui/core';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { useRecoilState } from 'recoil';
-import { editingTripState } from '../../data/state';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { editingTripState, imagesBaseUrlState } from '../../data/state';
 import { ImageFile, TripWithImageFiles } from '../../data/types';
-import CancelIcon from '@material-ui/icons/Cancel';
 import { v4 as uuidv4 } from 'uuid';
+import { ImagePreview } from './ImagePreview';
 
 interface Props {
 
@@ -45,43 +45,15 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginTop: 16
-    },
-    thumb: {
-        display: 'inline-flex',
-        borderRadius: 2,
-        border: '1px solid #eaeaea',
-        marginBottom: 8,
-        marginRight: 8,
-        width: 100,
-        height: 100,
-        padding: 4,
-        boxSizing: 'border-box'
-    },
-    thumbInner: {
-        display: 'flex',
-        minWidth: 0,
-        overflow: 'hidden'
-    },
-    img: {
-        display: 'block',
-        width: 'auto',
-        height: '100%'
-    },
-    deleteParent: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'flex-end',
-        width: 100,
-        position: 'absolute',
-        marginTop: -10
     }
 }));
 
 
-
 export const ImageUploader = (props: Props) => {
+    const theme = useTheme();
+    const imagesUrl = useRecoilValue(imagesBaseUrlState);
     const classes = useStyles();
-    const theme = useTheme()
+
     const { acceptedFiles, getRootProps, getInputProps,
         isDragActive,
         isDragAccept,
@@ -91,6 +63,7 @@ export const ImageUploader = (props: Props) => {
 
     const [images, setimages] = useState<ImageFile[]>([]);
     const [editingTrip, setEditingTrip] = useRecoilState<TripWithImageFiles>(editingTripState);
+    const [existingImages, setExistingImages] = useState<string[]>([])
 
     const style = useMemo(() => ({
         ...baseStyle,
@@ -119,7 +92,6 @@ export const ImageUploader = (props: Props) => {
                 newFiles.push(newFile);
             }
 
-
             setimages([...images, ...newFiles])
 
         }
@@ -137,7 +109,7 @@ export const ImageUploader = (props: Props) => {
 
         setEditingTrip({
             ...editingTrip,
-            images: images.map(f => f.name),
+            images: [ ...existingImages, ...images.map(f => f.name)] ,
             dateSuggestion: dateSuggesion,
             imageFiles: images
         })
@@ -145,33 +117,50 @@ export const ImageUploader = (props: Props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [images])
 
-    const removeImage = (name: string): void => {
-        setimages(images.filter(i => i.name !== name))
-    }
+    useEffect(() => {
+        if(!editingTrip.images) return;
+        console.log(editingTrip.images) 
+
+        setExistingImages(editingTrip.images);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [editingTrip.id])
 
 
-    const preview = (files: ImageFile[]): ReactNode => {
-        return (files &&
-            files.map(file => (
-                <div className={classes.thumb} key={file.name}>
-                    <div className={classes.thumbInner}>
-                        <img
-                            src={file.preview}
-                            className={classes.img}
-                            alt={file.name}
-                        />
-                        <div className={classes.deleteParent}>
-                            <IconButton onClick={() => removeImage(file.name)} aria-label="delete">
-                                <CancelIcon />
-                            </IconButton>
-                        </div>
-
-                    </div>
-                </div>
+    const preview = (): ReactNode => {
+        if (!images) return undefined;
+        return (
+            images &&
+            images.map(file => (
+                <ImagePreview
+                    key={file.name}
+                    src={file.preview}
+                    onRemove={() => setimages(images.filter(i => i.name !== file.name))}
+                />
             ))
         )
     };
 
+
+    const removeExistingImage = (imageName: string ) => {
+        setExistingImages(existingImages.filter( n => n !== imageName))
+    }
+
+
+    const previewExistingImages = (): ReactNode => {
+
+        return (
+            existingImages &&
+            existingImages.map(imageName => {
+                return (
+                    <ImagePreview
+                        key={imageName}
+                        src={`${imagesUrl}${imageName}`}
+                        onRemove={()=> removeExistingImage(imageName)}
+                    />)
+
+            })
+        )
+    };
 
     return (
         <section className="container">
@@ -180,7 +169,8 @@ export const ImageUploader = (props: Props) => {
                 <p>Upload Images</p>
             </div>
             <aside className={classes.thumbsContainer}>
-                {preview(images)}
+                {preview()}
+                {previewExistingImages()}
             </aside>
         </section>
     );
