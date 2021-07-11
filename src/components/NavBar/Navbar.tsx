@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-import { Container, useScrollTrigger } from '@material-ui/core';
+import { Container } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import { useHistory } from 'react-router-dom';
 
