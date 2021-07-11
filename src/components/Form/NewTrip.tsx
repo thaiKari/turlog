@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useSetRecoilState } from 'recoil';
 import { editingTripState, getNewTrip } from '../../data/state';
-import { TripForm } from '../Form/TripForm';
+import { TripForm } from './TripForm';
 
 export const NewTrip = () => {
     const setEditingTrip = useSetRecoilState(editingTripState)

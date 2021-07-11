@@ -4,6 +4,8 @@ import { Card, CardActionArea, CardContent, CardMedia, makeStyles, Typography } 
 import { useRecoilValue } from "recoil";
 import { imagesBaseUrlState } from "../../data/state";
 import { TripCardActions } from "./TripCardActions";
+import { useHistory } from "react-router-dom";
+import { TripHeader } from "../trip/TripHeader";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -12,9 +14,6 @@ const useStyles = makeStyles((theme) => ({
   },
   media: {
     height: 140,
-  },
-  pos: {
-    marginBottom: 12,
   }
 }));
 
@@ -25,6 +24,7 @@ interface Props {
 export const TripCard: React.FC<Props> = ({ trip }) => {
   const classes = useStyles();
   const imagesUrl = useRecoilValue(imagesBaseUrlState);
+  const history = useHistory()
 
   const getImageUrl = (images: string[] | undefined): string => {
     let imageName = 'placeholder.png'
@@ -39,19 +39,14 @@ export const TripCard: React.FC<Props> = ({ trip }) => {
   return (
     <div>
       <Card className={classes.root}>
-        <CardActionArea>
+        <CardActionArea onClick={()=> history.push(`/trip/${trip.id}`)}>
           <CardMedia
             className={classes.media}
             image={getImageUrl(trip.images)}
             title="Contemplative Reptile"
           />
           <CardContent>
-            <Typography variant="h5" component="h2">
-              {trip.name}
-            </Typography>
-            <Typography gutterBottom className={classes.pos} color="textSecondary" >
-              {trip.date.toLocaleDateString()}
-            </Typography>
+            <TripHeader trip={trip}/>
             <Typography variant="body2" component="p">
               {trip.description ? trip.description : ''}
             </Typography>

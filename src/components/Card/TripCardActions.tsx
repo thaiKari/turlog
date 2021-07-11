@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Trip } from '../../data/types';
 import { TripCardMenu } from './TripCardMenu';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     actions: {
@@ -20,6 +21,7 @@ interface Props {
 export const TripCardActions: React.FC<Props> = ({ trip }) => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const history = useHistory();
 
 
     const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -29,7 +31,7 @@ export const TripCardActions: React.FC<Props> = ({ trip }) => {
     return (
         <>
             <CardActions className={classes.actions} >
-                <Button size="small" color="primary">
+                <Button onClick={()=> history.push(`/trip/${trip.id}`)} size="small" color="primary">
                     See More
                 </Button>
                 <IconButton size="small" onClick={handleMenuClick} >

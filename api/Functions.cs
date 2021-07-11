@@ -39,7 +39,7 @@ namespace api
         }
 
         [FunctionName("DeleteTrip")]
-        public static async Task<IActionResult> DeletePerson(
+        public static async Task<IActionResult> DeleteTrip(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "trip/{id}")] HttpRequest req,
             ExecutionContext context,
             ILogger log, string id)
@@ -47,6 +47,18 @@ namespace api
             var storageHelper = ConfigHelper.GetStorageHelper(context);
             await storageHelper.DeleteTrip(id);
             return new ObjectResult($"person with id {id} was deleted");
+
+        }
+
+        [FunctionName("GetTrip")]
+        public static async Task<IActionResult> GetTrip(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "trip/{id}")] HttpRequest req,
+            ExecutionContext context,
+            ILogger log, string id)
+        {
+            var storageHelper = ConfigHelper.GetStorageHelper(context);
+            var trip = await storageHelper.GetTrip(id);
+            return new OkObjectResult(trip); ;
 
         }
 

@@ -40,4 +40,9 @@ export const editingTripState = atom<Trip | undefined>({
 export const imageFilesState = atom({
     key: 'imageFilesState',
     default: [] as ImageFile[]
+  });
+  
+  export const tripFormRedirectUrlState = atom({
+    key: 'tripFormRedirectUrlState',
+    default: ''
   });  
