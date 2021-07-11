@@ -46,3 +46,8 @@ export const imageFilesState = atom({
     key: 'tripFormRedirectUrlState',
     default: ''
   });  
+
+  export const isMobileState = atom({
+    key: 'isMobileState',
+    default: false
+  });  

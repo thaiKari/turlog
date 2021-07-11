@@ -4,6 +4,8 @@ import { Trip } from '../../data/types'
 
 interface Props {
     trip: Trip;
+    textAlign?: 'center';
+
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -12,15 +14,16 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const TripHeader = ({ trip }: Props) => {
+export const TripHeader = ({ trip, textAlign }: Props) => {
     const classes = useStyles();
+    const align = textAlign ?? 'left'
 
     return (
         <div>
-            <Typography variant="h5" component="h2">
+            <Typography style={{textAlign: align}} variant="h5" component="h2">
                 {trip.name}
             </Typography>
-            <Typography gutterBottom className={classes.pos} color="textSecondary" >
+            <Typography  style={{textAlign: align}} gutterBottom className={classes.pos} color="textSecondary" >
                 {trip.date.toLocaleDateString()}
             </Typography>
         </div>

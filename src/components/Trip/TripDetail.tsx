@@ -7,6 +7,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { useSetRecoilState } from 'recoil';
 import { tripFormRedirectUrlState } from '../../data/state';
 import { TripHeader } from './TripHeader';
+import { TripPhotos } from './TripPhotos';
 
 const useStyles = makeStyles((theme) => ({
     gutterBottom: {
@@ -46,10 +47,10 @@ export const TripDetail = () => {
 
     return (
         <div>
-            {/* Photo Section */}
+            
             <div className={classes.header}>
                 <div />
-                <TripHeader trip={trip} />
+                <TripHeader textAlign='center' trip={trip} />
                 <Tooltip title='Edit Trip'>
                     <IconButton onClick={onEditClick} color='primary'>
                         <EditIcon />
@@ -58,6 +59,8 @@ export const TripDetail = () => {
             </div>
 
             <Divider className={classes.gutterBottom} />
+
+            {trip.images && <TripPhotos images={trip.images}/>}
 
             {trip.description &&
                 <>
