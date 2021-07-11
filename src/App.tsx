@@ -1,7 +1,6 @@
 import { Container } from "@material-ui/core";
 import React, { Suspense } from "react";
 import { RecoilRoot } from "recoil";
-import { TripList } from "./components/trip/TripList";
 import {
   BrowserRouter as Router,
   Switch,
@@ -11,6 +10,7 @@ import { NewTrip } from "./components/form/NewTrip";
 import { EditTrip } from "./components/form/EditTrip";
 import { TripDetail } from "./components/trip/TripDetail";
 import { NavBar } from "./components/navbar/Navbar";
+import { TripList } from "./components/trip/TripList";
 
 export const App = () => {
   return (
