@@ -6,10 +6,10 @@ import {
   Switch,
   Route
 } from "react-router-dom";
-import { NewTrip } from "./components/form/NewTrip";
 import { EditTrip } from "./components/form/EditTrip";
-import { TripDetail } from "./components/trip/TripDetail";
+import { NewTrip } from "./components/form/NewTrip";
 import { NavBar } from "./components/navbar/Navbar";
+import { TripDetail } from "./components/trip/TripDetail";
 import { TripList } from "./components/trip/TripList";
 
 export const App = () => {
