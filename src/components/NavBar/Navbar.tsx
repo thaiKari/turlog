@@ -27,32 +27,18 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-interface Props {
-    children: React.ReactElement;
-  }
-
-export const ElevationScroll:React.FC<Props> = ({children}) => {
-    const trigger = useScrollTrigger({
-        disableHysteresis: true,
-        threshold: 0,
-      });
-    
-      return React.cloneElement(children, {
-        elevation: trigger ? 4 : 0,
-      });
-}
 
 
-export const NavBar:React.FC = props => {
+export const NavBar:React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
 
     return (
-
-        <><div className={classes.root}>
+        <>
+        <div className={classes.root}>
             <AppBar className={classes.appbar}>
                 <Toolbar>
-                    <Container fixed maxWidth="md" className={classes.container}>
+                    <Container fixed className={classes.container}>
 
                         <IconButton aria-label="home" onClick={() => history.push('/')}>
                             <HomeIcon />
@@ -60,6 +46,8 @@ export const NavBar:React.FC = props => {
                     </Container>
                 </Toolbar>
             </AppBar>
-        </div><Toolbar className={classes.margin} /></>
+        </div>
+        <Toolbar className={classes.margin} />
+        </>
     );
 }
