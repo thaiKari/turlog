@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Trip } from "../../data/types";
-import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, IconButton, makeStyles, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Card, CardActionArea, CardContent, CardMedia, makeStyles, Typography } from '@material-ui/core';
 import { useRecoilValue } from "recoil";
 import { imagesBaseUrlState } from "../../data/state";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { useHistory } from "react-router-dom";
+import { TripCardActions } from "./TripCardActions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,10 +15,6 @@ const useStyles = makeStyles((theme) => ({
   },
   pos: {
     marginBottom: 12,
-  },
-  actions: {
-    display: 'flex',
-    justifyContent: 'space-between'
   }
 }));
 
@@ -30,8 +25,6 @@ interface Props {
 export const TripCard: React.FC<Props> = ({ trip }) => {
   const classes = useStyles();
   const imagesUrl = useRecoilValue(imagesBaseUrlState);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const history = useHistory()
 
   const getImageUrl = (images: string[] | undefined): string => {
     let imageName = 'placeholder.png'
@@ -41,20 +34,6 @@ export const TripCard: React.FC<Props> = ({ trip }) => {
 
     return `${imagesUrl}${imageName}`
   }
-
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => { 
-    setAnchorEl(event.currentTarget);
-  };
-  
-
-  const onEditClick = (event: React.MouseEvent<HTMLLIElement>) => {
-    history.push(`/trip/edit/${trip.id}`);
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
 
 
   return (
@@ -67,7 +46,6 @@ export const TripCard: React.FC<Props> = ({ trip }) => {
             title="Contemplative Reptile"
           />
           <CardContent>
-
             <Typography variant="h5" component="h2">
               {trip.name}
             </Typography>
@@ -79,27 +57,9 @@ export const TripCard: React.FC<Props> = ({ trip }) => {
             </Typography>
           </CardContent>
         </CardActionArea>
-        <CardActions className={classes.actions} >
-          <Button size="small" color="primary">
-            See More
-          </Button>
-          <IconButton size="small" onClick={handleMenuClick} >
-            <MoreVertIcon fontSize="inherit" />
-          </IconButton>
-        </CardActions>
+        <TripCardActions trip={trip} />
       </Card>
-      <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={onEditClick}>Edit</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Delete</MenuItem>
-      </Menu>
     </div>
-
   );;
 };
 

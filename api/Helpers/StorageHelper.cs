@@ -19,9 +19,10 @@ namespace api.Helpers
 {
     public interface IStorageHelper
     {
-        public Task<Trip> CreateTrip(Trip trip);
-        public Task<List<Trip>> GetTrips();
-        public Task UploadFile(IFormFile file);
+        Task<Trip> CreateTrip(Trip trip);
+        Task<List<Trip>> GetTrips();
+        Task UploadFile(IFormFile file);
+        Task DeleteTrip(string id);
     }
 
     public class StorageHelper: IStorageHelper
@@ -93,12 +94,24 @@ namespace api.Helpers
                 {
                     await blobLeaseClient.ReleaseAsync();
                 }
-
-                
-
-                
             }
             
+        }
+
+        public async Task DeleteTrip(string id)
+        {
+            var trip = await GetEntity<TripEntity>("", id, _tableName);
+            await DeleteEntity(trip, _tableName);
+        }
+
+        private async Task<T> GetEntity<T>(string partitionKey, string id, string tableName) where T : TableEntity, new()
+        {
+            var table = _tableClient.GetTableReference(tableName);
+            var retrieveOperation = TableOperation.Retrieve<T>(partitionKey, id);
+            var result = await table.ExecuteAsync(retrieveOperation);
+            var entity = result.Result as T;
+
+            return entity;
         }
 
         private static async Task<T> MergeEntity<T>(T entity, string tableName) where T : TableEntity, new()
@@ -137,6 +150,12 @@ namespace api.Helpers
             while (continuationToken != null);
 
             return entities;
+        }
+        private static async Task DeleteEntity<T>(T entity, string tableName) where T : TableEntity, new()
+        {
+            var table = _tableClient.GetTableReference(tableName);
+            var insertOrMergeOperation = TableOperation.Delete(entity);
+            await table.ExecuteAsync(insertOrMergeOperation);
         }
     }
 }
