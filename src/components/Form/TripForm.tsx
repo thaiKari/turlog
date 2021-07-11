@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { editingTripState, getNewTrip, imageFilesState, updateTripsState } from '../../data/state';
+import { editingTripState, getNewTrip, imageFilesState, tripFormRedirectUrlState, updateTripsState } from '../../data/state';
 import { FormControl, TextField, Grid, makeStyles, Button } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
@@ -44,7 +44,7 @@ export const TripForm = ({ title }: Props) => {
     const history = useHistory();
     const [loading, setloading] = useState(false)
     const [imageFiles, setImageFiles] = useRecoilState(imageFilesState);
-
+    const [tripFormRedirectUrl, settripFormRedirectUrl] = useRecoilState(tripFormRedirectUrlState)
 
     const handleDateChange = useCallback((date: Date | null) => {
         if (!date) return;
@@ -64,6 +64,12 @@ export const TripForm = ({ title }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [handleDateChange, imageFiles])
 
+    const redirect = () => {
+        let url = (tripFormRedirectUrl ?? '/').slice();
+        settripFormRedirectUrl('');
+        history.push(url)
+    }
+
     const onSubmit = async () => {
         setloading(true)
         await createOrUpdateTrip(trip, imageFiles);
@@ -71,7 +77,7 @@ export const TripForm = ({ title }: Props) => {
         setloading(false)
         resetTrips()
         setEditingTrip(getNewTrip())
-        history.push('/')
+        redirect()
     }
 
     const onRemoveImage = useCallback(
@@ -86,8 +92,8 @@ export const TripForm = ({ title }: Props) => {
 
     const onCancel = () => {
         setImageFiles([])
-        setEditingTrip(getNewTrip());
-        history.push('/')
+        setEditingTrip(getNewTrip());        
+        redirect();
     }
 
 
@@ -102,6 +108,7 @@ export const TripForm = ({ title }: Props) => {
     if (loading) {
         return <div>Saving Trip ...</div>
     }
+
 
     return (
         <div className={classes.root} >

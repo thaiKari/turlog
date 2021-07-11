@@ -23,6 +23,7 @@ namespace api.Helpers
         Task<List<Trip>> GetTrips();
         Task UploadFile(IFormFile file);
         Task DeleteTrip(string id);
+        Task<Trip> GetTrip(string id);
     }
 
     public class StorageHelper: IStorageHelper
@@ -102,6 +103,12 @@ namespace api.Helpers
         {
             var trip = await GetEntity<TripEntity>("", id, _tableName);
             await DeleteEntity(trip, _tableName);
+        }
+
+        public async Task<Trip> GetTrip(string id)
+        {
+            var tripEntity = await GetEntity<TripEntity>("", id, _tableName);
+            return tripEntity.ToTrip();
         }
 
         private async Task<T> GetEntity<T>(string partitionKey, string id, string tableName) where T : TableEntity, new()

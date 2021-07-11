@@ -2,8 +2,14 @@ import { ImageFile, Trip } from "./types";
 
 export async function getTrips(): Promise<Trip[]> {
   let trips = await (await fetch(`/api/trips`)).json();
-  sanitize(trips);
+  sanitizeTrips(trips);
   return trips;
+}
+
+export async function getTrip(id: string): Promise<Trip> {
+  let trip = await (await fetch(`/api/trip/${id}`)).json();
+  sanitizeTrip(trip);
+  return trip;
 }
 
 export async function getImageBaseUrl(): Promise<string> {
@@ -34,10 +40,14 @@ export async function createOrUpdateTrip(
   return "true";
 }
 
-function sanitize(trips: Trip[]) {
+function sanitizeTrips(trips: Trip[]) {
   trips.forEach((t) => {
-    t.date = new Date(t.date.toString());
+    sanitizeTrip(t)
   });
+}
+
+function sanitizeTrip(trip: Trip) {  
+  trip.date = new Date(trip.date.toString());
 }
 
 async function saveTrip(trip: Trip): Promise<any> {

@@ -1,4 +1,4 @@
-import { IconButton, Tooltip } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import React from 'react'
 import { useCommonStyles } from '../commonStyles';
 import AddIcon from '@material-ui/icons/Add';
@@ -14,11 +14,14 @@ export const AddTripButton = (props: Props) => {
 
     return (
         <div className={commonStyle.flexEndParent}>
-            <Tooltip title="Add Trip" aria-label="add">
-            <IconButton color='primary' onClick={()=> history.push('/trip/new')}>
-                <AddIcon />
-            </IconButton>
-            </Tooltip>
+            <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={()=> history.push("/trip/new")}
+            >
+                Add Trip
+            </Button>
         </div>
     )
 }
