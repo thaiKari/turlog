@@ -3,9 +3,10 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-import { Container } from '@material-ui/core';
+import { Container, Tooltip } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
+import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -15,13 +16,13 @@ const useStyles = makeStyles((theme: Theme) =>
         container: {
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'flex-start'
+            justifyContent: 'space-between'
         },
-        appbar:{
+        appbar: {
             backgroundColor: theme.palette.common.white,
             color: theme.palette.getContrastText(theme.palette.common.white),
         },
-        margin :{
+        margin: {
             margin: theme.spacing(2)
         }
     }),
@@ -29,25 +30,35 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 
-export const NavBar:React.FC = () => {
+export const NavBar: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
+    const location = useLocation();
+
+    const isHome = location.pathname === '/'
 
     return (
         <>
-        <div className={classes.root}>
-            <AppBar className={classes.appbar}>
-                <Toolbar>
-                    <Container fixed className={classes.container}>
+            <div className={classes.root}>
+                <AppBar className={classes.appbar}>
+                    <Toolbar>
+                        <Container className={classes.container}>
+                            <IconButton aria-label="home" onClick={() => history.push('/')}>
+                                <HomeIcon />
+                            </IconButton>
+                            {isHome &&
+                                <Tooltip title='Add Trip'>
+                                    <IconButton aria-label="home" onClick={() => history.push('/trip/new')}>
+                                        <AddIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            }
 
-                        <IconButton aria-label="home" onClick={() => history.push('/')}>
-                            <HomeIcon />
-                        </IconButton>
-                    </Container>
-                </Toolbar>
-            </AppBar>
-        </div>
-        <Toolbar className={classes.margin} />
+                        </Container>
+                    </Toolbar>
+                </AppBar>
+            </div>
+            <Toolbar className={classes.margin} />
         </>
     );
 }

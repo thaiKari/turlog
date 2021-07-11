@@ -11,6 +11,7 @@ import { NewTrip } from "./components/Form/NewTrip";
 import { NavBar } from "./components/NavBar/Navbar";
 import { TripDetail } from "./components/Trip/TripDetail";
 import { TripList } from "./components/Trip/TripList";
+import { IsMobileCalculator } from "./components/IsMobileCalculator";
 
 export const App = () => {
   return (
@@ -18,6 +19,7 @@ export const App = () => {
       <Router>
       <Container>
         <NavBar/>
+        <IsMobileCalculator/>
         <Suspense fallback={<div>Loading ...</div>}>
         <Switch>
           <Route path="/trip/new" component={NewTrip} />
