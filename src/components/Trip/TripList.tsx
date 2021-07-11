@@ -3,7 +3,7 @@ import React from "react";
 import { useRecoilValue } from "recoil";
 import { tripsState } from "../../data/state";
 import { AddTripButton } from "./AddTripButton";
-import { TripCard } from "../card/TripCard";
+import { TripCard } from "../Card/TripCard";
 
 const useStyles = makeStyles((theme) => ({
   root: {

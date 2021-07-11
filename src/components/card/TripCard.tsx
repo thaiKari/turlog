@@ -5,7 +5,7 @@ import { useRecoilValue } from "recoil";
 import { imagesBaseUrlState } from "../../data/state";
 import { TripCardActions } from "./TripCardActions";
 import { useHistory } from "react-router-dom";
-import { TripHeader } from "../trip/TripHeader";
+import { TripHeader } from "../Trip/TripHeader";
 
 const useStyles = makeStyles((theme) => ({
   root: {
