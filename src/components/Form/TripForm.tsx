@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { createOrUpdateTrip } from '../../data/data';
 import { ImageUploader } from './ImageUploader';
 import { LocationSelection } from '../Location/LocationSelection';
+import { GeoLocation } from '../../data/location';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -49,9 +50,17 @@ export const TripForm = ({ title }: Props) => {
 
     const handleDateChange = useCallback((date: Date | null) => {
         if (!date) return;
-        setEditingTrip({ ...trip, date: date });
+        if (date !== trip.date) {
+            setEditingTrip({ ...trip, date: date });
+        }
     }, [setEditingTrip, trip]);
 
+    const handleLocationChange = useCallback((location: GeoLocation | undefined | null) => {
+        
+        if (!location) return;
+        setEditingTrip({ ...trip, location: location });
+
+    }, [setEditingTrip, trip]);
 
     useEffect(() => {
         if (!imageFiles) return;
@@ -180,7 +189,9 @@ export const TripForm = ({ title }: Props) => {
                 </Grid>
 
                 <Grid item xs={12} sm={12}>
-                    <LocationSelection />
+                    <LocationSelection
+                        location={trip.location}
+                        handleLocationChange={handleLocationChange} />
                 </Grid>
 
             </Grid>

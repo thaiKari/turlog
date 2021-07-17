@@ -1,4 +1,5 @@
 import { FileWithPath } from "react-dropzone";
+import { GeoLocation } from "./location";
 
 export interface Trip {
     id:           string;
@@ -8,7 +9,8 @@ export interface Trip {
     parking:      string;
     notes:        string[];
     participants: string[];
-    images?:       string[];
+    images?:      string[];
+    location?:    GeoLocation
 }
 
 export interface ImageFile extends FileWithPath {

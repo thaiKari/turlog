@@ -1,12 +1,12 @@
 import { useEffect, useState, useMemo } from 'react'
 import { createStyles, Grid, InputAdornment, makeStyles, TextField, Theme, Typography, withStyles } from '@material-ui/core';
-import { useRecoilState } from 'recoil';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from '@material-ui/icons/Search';
 import { debounce } from 'lodash';
 import React from 'react';
-import { GeoLocation, KartverkLocationSearch, selectedLocationState } from '../../data/location';
+import { GeoLocation, KartverkLocationSearch } from '../../data/location';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
+import { LocationSelectionProps } from './LocationSelection';
 
 
 const CustomTextField = withStyles((theme: Theme) => ({
@@ -39,11 +39,10 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-export const Search = () => {
+export const Search = ({location, handleLocationChange}: LocationSelectionProps) => {
     const classes = useStyles();
-    const [selectedLocation, setSelectedLocation] = useRecoilState<GeoLocation | null>(selectedLocationState);
     const [inputValue, setInputValue] = useState('');
-    const [options, setAdressOptions] = useState<GeoLocation[]>([])
+    const [options, setOptions] = useState<GeoLocation[]>([])
 
     const fetchSearchOptions = useMemo(
         () =>
@@ -56,11 +55,12 @@ export const Search = () => {
         [],
     );
 
+
     useEffect(() => {
         let active = true;
 
         if (inputValue === '') {
-            setAdressOptions([]);
+            setOptions([]);
         }
 
         fetchSearchOptions(inputValue, (results: GeoLocation[]) => {
@@ -68,15 +68,15 @@ export const Search = () => {
 
                 let newOptions = [] as GeoLocation[];
 
-                if (selectedLocation) {
-                    newOptions = [selectedLocation];
+                if (location) {
+                    newOptions = [location];
                 }
 
                 if (results) {
                     newOptions = [...newOptions, ...results];
                 }
 
-                setAdressOptions(newOptions);
+                setOptions(newOptions);
             }
         });
 
@@ -85,25 +85,23 @@ export const Search = () => {
             active = false;
         };
 
-    }, [selectedLocation, inputValue, fetchSearchOptions]);
-
-
+    }, [location, inputValue, fetchSearchOptions]);
 
     return (
         <div className={classes.root}>
             <Autocomplete
                 id="fritekstsok-demo"
                 options={options}
-                value={selectedLocation}
+                value={location ?? null}
                 getOptionLabel={(s: GeoLocation) => `${s.name}-${s.kommune}`}
                 filterOptions={(x) => x}
                 className={classes.autocomplete}
                 autoComplete
                 includeInputInList
                 filterSelectedOptions
-                onChange={(_, newValue: GeoLocation | null) => {
-                    setAdressOptions(newValue ? [newValue, ...options] : options);
-                    setSelectedLocation(newValue);
+                onChange={(_, newValue: GeoLocation | null ) => {
+                    setOptions(newValue ? [newValue, ...options] : options);
+                    handleLocationChange(newValue );
                 }}
                 onInputChange={(_, newInputValue) => {
                     setInputValue(newInputValue);
