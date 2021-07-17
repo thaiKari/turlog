@@ -56,7 +56,7 @@ export const TripForm = ({ title }: Props) => {
     }, [setEditingTrip, trip]);
 
     const handleLocationChange = useCallback((location: GeoLocation | undefined | null) => {
-        
+
         if (!location) return;
         setEditingTrip({ ...trip, location: location });
 
@@ -183,16 +183,18 @@ export const TripForm = ({ title }: Props) => {
                 </Grid>
 
                 <Grid item xs={12} sm={12}>
+                    <LocationSelection
+                        location={trip.location}
+                        handleLocationChange={handleLocationChange} />
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
                     <FormControl style={{ width: '100%' }}>
                         <ImageUploader onRemoveImage={onRemoveImage} />
                     </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={12}>
-                    <LocationSelection
-                        location={trip.location}
-                        handleLocationChange={handleLocationChange} />
-                </Grid>
+                
 
             </Grid>
 
