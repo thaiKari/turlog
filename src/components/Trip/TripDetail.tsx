@@ -73,9 +73,9 @@ export const TripDetail = () => {
                 </>}
 
             {trip.location &&
-                <>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} sm={3}>
+
+                    <Grid container spacing={0}className={classes.gutterBottom}>
+                        <Grid item xs={12} sm={3} className={classes.gutterBottom}>
                             <Typography variant="body1">
                                 <span style={{fontWeight:'bold'}}>
                                     Location
@@ -88,10 +88,8 @@ export const TripDetail = () => {
                         </Grid>
 
                     </Grid>
-                </>
             }
             
-            <br/>
             <Divider className={classes.gutterBottom} />
 
             {trip.parking &&
