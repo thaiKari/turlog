@@ -1,4 +1,4 @@
-import { Box, Divider, Grid, IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
+import { Divider, Grid, IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { getTrip } from '../../data/data';
@@ -49,6 +49,7 @@ export const TripDetail = () => {
 
     return (
         <div>
+
             <div className={classes.header}>
                 <div />
                 <TripHeader textAlign='center' trip={trip} />
@@ -76,9 +77,9 @@ export const TripDetail = () => {
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={3}>
                             <Typography variant="body1">
-                                <Box fontWeight="fontWeightBold">
+                                <span style={{fontWeight:'bold'}}>
                                     Location
-                                </Box>
+                                </span>
                             </Typography>
                             <LocationInfo align='left' location={trip.location} />
                         </Grid>
@@ -96,9 +97,9 @@ export const TripDetail = () => {
             {trip.parking &&
                 <>
                     <Typography variant="body1">
-                        <Box fontWeight="fontWeightBold">
+                        <span style={{fontWeight:'bold'}}>
                             Parking
-                        </Box>
+                        </span>
                     </Typography><Typography variant="body2" component="p">
                         {trip.parking}
                     </Typography>
