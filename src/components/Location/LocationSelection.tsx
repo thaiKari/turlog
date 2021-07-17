@@ -1,5 +1,6 @@
 import React from 'react'
 import { GeoLocation } from '../../data/location'
+import { Map } from './Map'
 import { Search } from './Search'
 
 export interface LocationSelectionProps {
@@ -8,9 +9,12 @@ export interface LocationSelectionProps {
 }
 
 export const LocationSelection = (props: LocationSelectionProps) => {
+    const { location } = props
+
     return (
         <div>
-            <Search {...props}/>
+            <Search {...props} />
+            <Map location={location} />
         </div>
     )
 }

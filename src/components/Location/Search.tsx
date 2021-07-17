@@ -93,7 +93,7 @@ export const Search = ({location, handleLocationChange}: LocationSelectionProps)
                 id="fritekstsok-demo"
                 options={options}
                 value={location ?? null}
-                getOptionLabel={(s: GeoLocation) => `${s.name}-${s.kommune}`}
+                getOptionLabel={(s: GeoLocation) => `${s.name} - ${s.kommune}`}
                 filterOptions={(x) => x}
                 className={classes.autocomplete}
                 autoComplete
