@@ -2,7 +2,7 @@ import { LatLngTuple } from 'leaflet';
 import React, { useEffect } from 'react'
 import { LayersControl, TileLayer, useMap } from 'react-leaflet'
 
-const apikey = process.env.REACT_APP_API_KEY;
+const apikey = process.env.REACT_APP_NORKART_API_KEY;
 
 const layers = [
     {
