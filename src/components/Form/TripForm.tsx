@@ -8,6 +8,7 @@ import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { createOrUpdateTrip } from '../../data/data';
 import { ImageUploader } from './ImageUploader';
+import { LocationSelection } from '../Location/LocationSelection';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -61,7 +62,7 @@ export const TripForm = ({ title }: Props) => {
                 handleDateChange(suggestion);
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [handleDateChange, imageFiles])
 
     const redirect = () => {
@@ -92,7 +93,7 @@ export const TripForm = ({ title }: Props) => {
 
     const onCancel = () => {
         setImageFiles([])
-        setEditingTrip(getNewTrip());        
+        setEditingTrip(getNewTrip());
         redirect();
     }
 
@@ -177,6 +178,11 @@ export const TripForm = ({ title }: Props) => {
                         <ImageUploader onRemoveImage={onRemoveImage} />
                     </FormControl>
                 </Grid>
+
+                <Grid item xs={12} sm={12}>
+                    <LocationSelection />
+                </Grid>
+
             </Grid>
 
             <Button className={classes.button} variant='contained' color='primary' onClick={onSubmit}>
