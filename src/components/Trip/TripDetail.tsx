@@ -1,4 +1,4 @@
-import { Box, Divider, IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
+import { Box, Divider, Grid, IconButton, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { getTrip } from '../../data/data';
@@ -8,6 +8,8 @@ import { useSetRecoilState } from 'recoil';
 import { tripFormRedirectUrlState } from '../../data/state';
 import { TripHeader } from './TripHeader';
 import { TripPhotos } from './TripPhotos';
+import { LocationInfo } from '../Location/LocationInfo';
+import { Map } from '../Location/Map'
 
 const useStyles = makeStyles((theme) => ({
     gutterBottom: {
@@ -36,7 +38,7 @@ export const TripDetail = () => {
     }, [id])
 
     const onEditClick = () => {
-        if(!trip) return;
+        if (!trip) return;
         setTripFormRedirectUrl(location.pathname)
         history.push(`/trip/edit/${trip.id}`)
     }
@@ -47,7 +49,6 @@ export const TripDetail = () => {
 
     return (
         <div>
-            
             <div className={classes.header}>
                 <div />
                 <TripHeader textAlign='center' trip={trip} />
@@ -60,7 +61,7 @@ export const TripDetail = () => {
 
             <Divider className={classes.gutterBottom} />
 
-            {trip.images && <TripPhotos images={trip.images}/>}
+            {trip.images && <TripPhotos images={trip.images} />}
 
             {trip.description &&
                 <>
@@ -69,6 +70,28 @@ export const TripDetail = () => {
                     </Typography>
                     <Divider className={classes.gutterBottom} />
                 </>}
+
+            {trip.location &&
+                <>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={3}>
+                            <Typography variant="body1">
+                                <Box fontWeight="fontWeightBold">
+                                    Location
+                                </Box>
+                            </Typography>
+                            <LocationInfo align='left' location={trip.location} />
+                        </Grid>
+                        <Grid item xs={12} sm={9}>
+                            <Map location={trip.location} />
+                        </Grid>
+
+                    </Grid>
+                </>
+            }
+            
+            <br/>
+            <Divider className={classes.gutterBottom} />
 
             {trip.parking &&
                 <>

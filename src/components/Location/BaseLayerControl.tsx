@@ -2,7 +2,7 @@ import { LatLngTuple } from 'leaflet';
 import React, { useEffect } from 'react'
 import { LayersControl, TileLayer, useMap } from 'react-leaflet'
 
-const apikey = '18169747-cdbe-4281-bf1f-6ad408255fd1';
+const apikey = process.env.REACT_APP_API_KEY;
 
 const layers = [
     {

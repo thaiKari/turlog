@@ -6,7 +6,7 @@ import { BaseLayerControl } from './BaseLayerControl'
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import L from 'leaflet';
-import { Typography } from '@material-ui/core'
+import { LocationInfo } from './LocationInfo'
 
 let DefaultIcon = L.icon({
     iconUrl: icon,
@@ -32,16 +32,11 @@ export const Map = ({ location }: MapProps) => {
         <MapContainer style={{ width: '100%', height: 250 }} center={center} zoom={9} scrollWheelZoom={false} dragging={false} zoomControl={false}>
             <ZoomControl position='bottomright' />
             <BaseLayerControl center={center} />
-            <Marker position={center}>
+            {location && <Marker position={center}>
                 <Popup >
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Typography align='center' >{location?.name} - {location?.kommune},</Typography>
-
-                        <Typography align='center'  variant='caption'>{location?.coordinates.lat},{location?.coordinates.lng}</Typography>
-                        <Typography align='center'  variant='caption'> {location?.fylke} </Typography>
-                    </div>
+                    <LocationInfo location={location}/>
                 </Popup>
-            </Marker>
+            </Marker>}
         </MapContainer>
     )
 }
