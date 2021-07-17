@@ -8,6 +8,8 @@ import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { createOrUpdateTrip } from '../../data/data';
 import { ImageUploader } from './ImageUploader';
+import { LocationSelection } from '../Location/LocationSelection';
+import { GeoLocation } from '../../data/location';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,9 +50,17 @@ export const TripForm = ({ title }: Props) => {
 
     const handleDateChange = useCallback((date: Date | null) => {
         if (!date) return;
-        setEditingTrip({ ...trip, date: date });
+        if (date !== trip.date) {
+            setEditingTrip({ ...trip, date: date });
+        }
     }, [setEditingTrip, trip]);
 
+    const handleLocationChange = useCallback((location: GeoLocation | undefined | null) => {
+
+        if (!location) return;
+        setEditingTrip({ ...trip, location: location });
+
+    }, [setEditingTrip, trip]);
 
     useEffect(() => {
         if (!imageFiles) return;
@@ -61,7 +71,7 @@ export const TripForm = ({ title }: Props) => {
                 handleDateChange(suggestion);
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [handleDateChange, imageFiles])
 
     const redirect = () => {
@@ -92,7 +102,7 @@ export const TripForm = ({ title }: Props) => {
 
     const onCancel = () => {
         setImageFiles([])
-        setEditingTrip(getNewTrip());        
+        setEditingTrip(getNewTrip());
         redirect();
     }
 
@@ -173,10 +183,19 @@ export const TripForm = ({ title }: Props) => {
                 </Grid>
 
                 <Grid item xs={12} sm={12}>
+                    <LocationSelection
+                        location={trip.location}
+                        handleLocationChange={handleLocationChange} />
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
                     <FormControl style={{ width: '100%' }}>
                         <ImageUploader onRemoveImage={onRemoveImage} />
                     </FormControl>
                 </Grid>
+
+                
+
             </Grid>
 
             <Button className={classes.button} variant='contained' color='primary' onClick={onSubmit}>

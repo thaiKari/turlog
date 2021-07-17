@@ -23,6 +23,7 @@ namespace api.Models
             Notes = JsonConvert.SerializeObject(trip.Notes);
             Participants = JsonConvert.SerializeObject(trip.Participants);
             Images = JsonConvert.SerializeObject(trip.Images);
+            Location = JsonConvert.SerializeObject(trip.Location);
         }
 
         public DateTime Date { get; set; }
@@ -32,6 +33,7 @@ namespace api.Models
         public string Notes { get; set; }
         public string Participants { get; set; }
         public string Images { get; set; }
+        public string Location { get; set; }
 
         public Trip ToTrip()
         {
@@ -42,9 +44,10 @@ namespace api.Models
                 Name = Name,
                 Description = Description,
                 Parking = Parking,
-                Notes = JsonConvert.DeserializeObject<List<string>>(Notes),
-                Participants = JsonConvert.DeserializeObject<List<string>>(Participants),
-                Images = JsonConvert.DeserializeObject<List<string>>(Images),
+                Notes = Notes == null ? null : JsonConvert.DeserializeObject<List<string>>(Notes),
+                Participants = Participants == null ? null : JsonConvert.DeserializeObject<List<string>>(Participants),
+                Images = Images == null ? null : JsonConvert.DeserializeObject<List<string>>(Images),
+                Location = Location == null ? null : JsonConvert.DeserializeObject<Location>(Location)
             };
         }
     }

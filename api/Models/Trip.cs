@@ -13,5 +13,6 @@ namespace api.Models
         public List<string> Notes { get; set; }
         public List<string> Participants { get; set; }
         public List<string> Images { get; set; }
+        public Location Location { get; set; }
     }
 }
