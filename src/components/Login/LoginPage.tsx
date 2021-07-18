@@ -21,7 +21,7 @@ export const LoginPage = () => {
     return (
         <div className={classes.root}>
             <Typography className={classes.title} variant="h5" component="h2">
-                Login
+                Log in
             </Typography>
             <LoginButtons/>            
         </div>
