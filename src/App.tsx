@@ -12,6 +12,7 @@ import { NavBar } from "./components/NavBar/Navbar";
 import { TripDetail } from "./components/Trip/TripDetail";
 import { TripList } from "./components/Trip/TripList";
 import { IsMobileCalculator } from "./components/IsMobileCalculator";
+import { LoginPage } from "./components/Login/LoginPage";
 
 export const App = () => {
   return (
@@ -22,6 +23,7 @@ export const App = () => {
         <IsMobileCalculator/>
         <Suspense fallback={<div>Loading ...</div>}>
         <Switch>
+          <Route path="/login" component={LoginPage} />
           <Route path="/trip/new" component={NewTrip} />
           <Route path="/trip/edit/:id" component={EditTrip} />
           <Route path="/trip/:id" component={TripDetail} />
