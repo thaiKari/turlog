@@ -1,18 +1,16 @@
-import { Button, makeStyles, Typography } from '@material-ui/core'
+import { makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
 import { useRecoilValue } from 'recoil';
 import { isLoggedInState } from '../../data/user';
 import { LoginButtons } from './LoginButtons';
+import { LogoutButton } from './LogoutButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        '& a':{
-            textDecoration: 'none'
-        }
+        alignItems: 'center',        
     },
     title: {
         margin: theme.spacing(1),
@@ -31,11 +29,7 @@ export const LoginPage = () => {
                 <Typography paragraph>
                     You are already logged in.
                 </Typography>
-                <a href='/.auth/logout?post_logout_redirect_uri=/'>
-                    <Button variant='contained' color='primary'>
-                        Log out
-                    </Button>
-                </a>
+                <LogoutButton/>                
             </div>
         )
     }

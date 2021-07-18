@@ -17,7 +17,7 @@ export const userRoles = {
 	CONTRIBUTOR: "contributor",
 }
 
-const userState = selector<User>({
+export const userState = selector<User>({
     key: 'userState',
     get:  async () => {
         return await (await fetch(`/.auth/me`)).json();
