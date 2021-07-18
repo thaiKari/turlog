@@ -7,6 +7,7 @@ import { Container, Tooltip } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import { useHistory, useLocation } from 'react-router-dom';
 import AddIcon from '@material-ui/icons/Add';
+import { ContributorOnly } from '../Login/ContributorOnly';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -46,6 +47,7 @@ export const NavBar: React.FC = () => {
                             <IconButton aria-label="home" onClick={() => history.push('/')}>
                                 <HomeIcon />
                             </IconButton>
+                            <ContributorOnly>
                             {isHome &&
                                 <Tooltip title='Add Trip'>
                                     <IconButton aria-label="home" onClick={() => history.push('/trip/new')}>
@@ -53,6 +55,7 @@ export const NavBar: React.FC = () => {
                                     </IconButton>
                                 </Tooltip>
                             }
+                            </ContributorOnly>
 
                         </Container>
                     </Toolbar>

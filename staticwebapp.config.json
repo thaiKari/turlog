@@ -10,6 +10,18 @@
       ]
     },
     {
+      "route": "/trip/edit/*",
+      "allowedRoles": [
+        "contributor"
+      ]
+    },
+    {
+      "route": "/trip/new/*",
+      "allowedRoles": [
+        "contributor"
+      ]
+    },
+    {
       "route": "/api/*",
       "methods": [
         "PUT",
@@ -18,14 +30,14 @@
         "DELETE"
       ],
       "allowedRoles": [
-        "contributer"
-      ]
-    },
-    {
-      "route": "/api/*",
-      "allowedRoles": [
-        "authenticated"
+        "contributor"
       ]
     }
-  ]
+  ],
+  "responseOverrides": {
+    "401": {
+      "redirect": "/login",
+      "statusCode": 302
+    }
+  }
 }

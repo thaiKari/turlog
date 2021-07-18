@@ -10,6 +10,7 @@ import { TripHeader } from './TripHeader';
 import { TripPhotos } from './TripPhotos';
 import { LocationInfo } from '../Location/LocationInfo';
 import { Map } from '../Location/Map'
+import { ContributorOnly } from '../Login/ContributorOnly';
 
 const useStyles = makeStyles((theme) => ({
     gutterBottom: {
@@ -53,11 +54,13 @@ export const TripDetail = () => {
             <div className={classes.header}>
                 <div />
                 <TripHeader textAlign='center' trip={trip} />
+                <ContributorOnly>
                 <Tooltip title='Edit Trip'>
                     <IconButton onClick={onEditClick} color='primary'>
                         <EditIcon />
                     </IconButton>
                 </Tooltip>
+                </ContributorOnly>
             </div>
 
             <Divider className={classes.gutterBottom} />
