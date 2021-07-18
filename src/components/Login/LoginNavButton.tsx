@@ -10,7 +10,6 @@ const useStyle = makeStyles((theme: Theme) =>
     createStyles({
         paper: {
             padding: theme.spacing(1),
-            maxWidth: 210
         },
         menuHeader: {
             marginLeft: theme.spacing(2)
@@ -85,7 +84,7 @@ const ButtonWithMenu = ({ menuButton, menuContent }: ButtonWithMenuProps) => {
 }
 
 const Login = () => {
-    const menuButton = <>Log In</>
+    const menuButton = <div>Log In</div>
     const menuContent = <LoginButtons/>
     
     return (
@@ -101,12 +100,12 @@ const LoggedIn = () => {
     const user = useRecoilValue(userState)
 
     const menuButton = <PersonIcon />
-    const menuContent = <>
+    const menuContent = <div>
         <Typography className={classes.menuHeader} color='textSecondary' paragraph>
             {user.clientPrincipal?.userDetails}
         </Typography>
         <LogoutButton buttonStyle={'menu'} />
-    </>
+    </div>
 
 
     return (

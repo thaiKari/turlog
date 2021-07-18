@@ -5,6 +5,9 @@ import FacebookButton from './icons/signInFacebook.png'
 import React from 'react'
 
 const useStyles = makeStyles((theme) => ({
+    root:{
+        maxWidth:210
+    },
     buttonImage: {
         height: 40
     }
@@ -15,7 +18,7 @@ export const LoginButtons = () => {
     const classes = useStyles();
 
     return (
-        <>
+        <div className={classes.root}>
             <Button>
                 <a href='/.auth/login/facebook'>
                     <img className={classes.buttonImage} alt='Sign in with Facebook' src={FacebookButton} />
@@ -32,6 +35,6 @@ export const LoginButtons = () => {
                     <img className={classes.buttonImage} alt='Sign in with Microsoft' src={MicrosoftButton} />
                 </a>
             </Button>
-        </>
+        </div>
     )
 }

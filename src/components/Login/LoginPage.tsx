@@ -29,7 +29,7 @@ export const LoginPage = () => {
                 <Typography paragraph>
                     You are already logged in.
                 </Typography>
-                <LogoutButton/>                
+                <LogoutButton post_logout_redirect_uri={'/login'}/>                
             </div>
         )
     }
