@@ -4,6 +4,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Trip } from '../../data/types';
 import { TripCardMenu } from './TripCardMenu';
 import { useHistory } from 'react-router-dom';
+import {  ContributorOnly } from '../Login/ContributorOnly';
 
 const useStyles = makeStyles((theme) => ({
     actions: {
@@ -23,7 +24,6 @@ export const TripCardActions: React.FC<Props> = ({ trip }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const history = useHistory();
 
-
     const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -31,18 +31,24 @@ export const TripCardActions: React.FC<Props> = ({ trip }) => {
     return (
         <>
             <CardActions className={classes.actions} >
-                <Button onClick={()=> history.push(`/trip/${trip.id}`)} size="small" color="primary">
+                <Button onClick={() => history.push(`/trip/${trip.id}`)} size="small" color="primary">
                     See More
                 </Button>
-                <IconButton size="small" onClick={handleMenuClick} >
-                    <MoreVertIcon fontSize="inherit" />
-                </IconButton>
+
+                <ContributorOnly>
+                    <IconButton size="small" onClick={handleMenuClick} >
+                        <MoreVertIcon fontSize="inherit" />
+                    </IconButton>
+                </ContributorOnly>
+
             </CardActions>
-            <TripCardMenu
-                trip={trip}
-                anchorEl={anchorEl}
-                setAnchorEl={setAnchorEl}
-            />
+            <ContributorOnly>
+                <TripCardMenu
+                    trip={trip}
+                    anchorEl={anchorEl}
+                    setAnchorEl={setAnchorEl}
+                />
+            </ContributorOnly>
 
         </>
     )

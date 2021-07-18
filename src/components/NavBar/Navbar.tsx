@@ -7,6 +7,8 @@ import { Container, Tooltip } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import { useHistory, useLocation } from 'react-router-dom';
 import AddIcon from '@material-ui/icons/Add';
+import { ContributorOnly } from '../Login/ContributorOnly';
+import { LoginNavButton } from '../Login/LoginNavButton';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -24,6 +26,12 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         margin: {
             margin: theme.spacing(2)
+        },
+        section:{
+            display: 'flex',
+            flexBasis:'column',
+            justifyContent: 'center',
+            alignItems: 'center'
         }
     }),
 );
@@ -46,13 +54,19 @@ export const NavBar: React.FC = () => {
                             <IconButton aria-label="home" onClick={() => history.push('/')}>
                                 <HomeIcon />
                             </IconButton>
-                            {isHome &&
-                                <Tooltip title='Add Trip'>
-                                    <IconButton aria-label="home" onClick={() => history.push('/trip/new')}>
-                                        <AddIcon />
-                                    </IconButton>
-                                </Tooltip>
-                            }
+
+                            <div className={classes.section}>
+                                <ContributorOnly>
+                                    {isHome &&
+                                        <Tooltip title='Add Trip'>
+                                            <IconButton aria-label="home" onClick={() => history.push('/trip/new')}>
+                                                <AddIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    }
+                                </ContributorOnly>
+                                <LoginNavButton />
+                            </div>
 
                         </Container>
                     </Toolbar>
